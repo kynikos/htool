@@ -121,10 +121,9 @@ class _List(_HTMLNormalElement):
 class A(_HTMLNormalElement):
     TAG = 'a'
 
-    def short(self, url):
-        self.set_attribute('href', url)
-        self.empty()
-        self.append_child(url)
+    @classmethod
+    def from_url(cls, url, **attributes):
+        return cls(url, href=url, **attributes)
 
 
 class Body(_HTMLNormalElement):
