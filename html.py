@@ -126,6 +126,10 @@ class A(_HTMLNormalElement):
         return cls(url, href=url, **attributes)
 
 
+class Base(_HTMLVoidElement):
+    TAG = 'base'
+
+
 class Body(_HTMLNormalElement):
     TAG = 'body'
 
@@ -174,6 +178,14 @@ class Li(_HTMLNormalElement):
     TAG = 'li'
 
 
+class Link(_HTMLVoidElement):
+    TAG = 'link'
+
+    @classmethod
+    def css(cls, path, **attributes):
+        return cls(href=path, rel="stylesheet", **attributes)
+
+
 class Meta(_HTMLVoidElement):
     TAG = 'meta'
 
@@ -184,6 +196,14 @@ class Ol(_List):
 
 class P(_HTMLNormalElement):
     TAG = 'p'
+
+
+class Script(_HTMLNormalElement):
+    TAG = 'script'
+
+    @classmethod
+    def js(cls, **attributes):
+        return cls(type='text/javascript', **attributes)
 
 
 class Span(_HTMLNormalElement):
