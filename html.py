@@ -290,14 +290,22 @@ class Document:
 
 class SimpleDocument(Document):
     def __init__(self, title, description, *body_elements, lang='en',
-                 style=None):
+                 base=None, css=None, style=None, js=None):
         html = Html(lang=lang)
 
         head = Head(Title(title),
                     Meta(charset='utf-8'),
                     Meta(name='description', content=description))
+        if base is not None:
+            head.append_child(Base(href=base))
+        if css is not None:
+            for path in css:
+                head.append_child(Link.css(path))
         if style is not None:
             head.append_child(Style(style))
+        if js is not None:
+            for path in js:
+                head.append_child(Script.js(src=path))
 
         body = Body(*body_elements)
 
