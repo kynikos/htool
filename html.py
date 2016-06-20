@@ -194,6 +194,10 @@ class Ol(_List):
     TAG = 'ol'
 
 
+class Option(_HTMLNormalElement):
+    TAG = 'option'
+
+
 class P(_HTMLNormalElement):
     TAG = 'p'
 
@@ -204,6 +208,10 @@ class Script(_HTMLNormalElement):
     @classmethod
     def js(cls, **attributes):
         return cls(type='text/javascript', **attributes)
+
+
+class Select(_HTMLNormalElement):
+    TAG = 'select'
 
 
 class Span(_HTMLNormalElement):
