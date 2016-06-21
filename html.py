@@ -1,3 +1,6 @@
+import itertools
+
+
 class _Element:
     def compose(self):
         raise NotImplementedError()
@@ -118,6 +121,26 @@ class _List(_HTMLNormalElement):
             self.append_item(item)
 
 
+class _Table(_HTMLNormalElement):
+    def append_header_row(self, *cells):
+        row = Tr()
+        self.append_child(row)
+        row.append_header_cells(*cells)
+
+    def append_data_row(self, *cells):
+        row = Tr()
+        self.append_child(row)
+        row.append_data_cells(*cells)
+
+    def append_header_rows(self, *rows):
+        for row in rows:
+            self.append_header_row(*row)
+
+    def append_data_rows(self, *rows):
+        for row in rows:
+            self.append_data_row(*row)
+
+
 class A(_HTMLNormalElement):
     TAG = 'a'
 
@@ -132,6 +155,31 @@ class Base(_HTMLVoidElement):
 
 class Body(_HTMLNormalElement):
     TAG = 'body'
+
+
+class Caption(_HTMLNormalElement):
+    TAG = 'caption'
+
+
+class Colgroup(_HTMLNormalElement):
+    TAG = 'colgroup'
+
+    def populate(self, colN, classes=None):
+        if classes:
+            classes = itertools.cycle(classes)
+            for x in range(colN):
+                class_ = next(classes)
+                self.append_child(Col(class_=class_))
+        else:
+            for x in range(colN):
+                self.append_child(Col())
+        # Return the object so that this method can be used directly when
+        # instantiating Colgroup as an argument for a parent element
+        return self
+
+
+class Col(_HTMLVoidElement):
+    TAG = 'col'
 
 
 class Div(_HTMLNormalElement):
@@ -222,34 +270,28 @@ class Style(_HTMLNormalElement):
     TAG = 'style'
 
 
-class Table(_HTMLNormalElement):
+class Table(_Table):
     TAG = 'table'
 
-    def append_header_row(self, *cells):
-        row = Tr()
-        self.append_child(row)
-        row.append_header_cells(*cells)
 
-    def append_data_row(self, *cells):
-        row = Tr()
-        self.append_child(row)
-        row.append_data_cells(*cells)
-
-    def append_header_rows(self, *rows):
-        for row in rows:
-            self.append_header_row(*row)
-
-    def append_data_rows(self, *rows):
-        for row in rows:
-            self.append_data_row(*row)
+class Tbody(_Table):
+    TAG = 'tbody'
 
 
 class Td(_HTMLNormalElement):
     TAG = 'td'
 
 
+class Tfoot(_Table):
+    TAG = 'tfoot'
+
+
 class Th(_HTMLNormalElement):
     TAG = 'th'
+
+
+class Thead(_Table):
+    TAG = 'thead'
 
 
 class Title(_HTMLNormalElement):
