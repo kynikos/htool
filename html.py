@@ -20,15 +20,21 @@ class _HTMLElement(_Element):
         self.tag = self.TAG
         self.attributes = self.ATTRIBUTES.copy()
 
-        # 'class' is a reserved Python keyword, so support using 'class_'
-        # TODO: Document this
-        try:
-            classnames = attributes['class_']
-        except KeyError:
-            pass
-        else:
-            attributes['class'] = classnames
-            del attributes['class_']
+        # 'class' is a reserved Python keyword, so support using 'class_' and
+        # 'classes'
+        # TODO: Document this, including the fact that it's not possible to
+        #       assign literal 'class_' or 'classes' attributes, as they will
+        #       always be converted
+        # Note that a 'class' parameter can still be passed directly with e.g.
+        # Tag(**{'class': 'name'})
+        classnames = attributes.get('class', '').split()
+        classnames.extend(attributes.get('class_', '').split())
+        attributes.pop('class_', None)
+        classnames.extend(attributes.get('classes', []))
+        attributes.pop('classes', None)
+        if classnames:
+            attributes['class'] = ' '.join(classnames)
+
         self.attributes.update(attributes)
 
     def set_attribute(self, key, value):
