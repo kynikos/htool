@@ -237,7 +237,7 @@ class Link(_HTMLVoidElement):
 
     @classmethod
     def css(cls, path, **attributes):
-        return cls(href=path, rel="stylesheet", **attributes)
+        return cls(href=path, type="text/css", rel="stylesheet", **attributes)
 
 
 class Meta(_HTMLVoidElement):
@@ -355,8 +355,10 @@ class SimpleDocument(Document):
         if base is not None:
             head.append_child(Base(href=base))
         if css is not None:
-            for path in css:
-                head.append_child(Link.css(path))
+            # Use a nested list, not a dictionary, or the sheet order will be
+            # lost
+            for media, path in css:
+                head.append_child(Link.css(path, media=media))
         if style is not None:
             head.append_child(Style(style))
         if js is not None:
