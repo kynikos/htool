@@ -1,3 +1,4 @@
+from collections import OrderedDict
 import itertools
 
 
@@ -13,12 +14,13 @@ class Doctype(_Element):
 
 class _HTMLElement(_Element):
     TAG = None
-    ATTRIBUTES = {}
+    ATTRIBUTES = OrderedDict()
 
     def __init__(self, **attributes):
         super().__init__()
         self.tag = self.TAG
-        self.attributes = self.ATTRIBUTES.copy()
+        self.attributes = OrderedDict()
+        self.attributes.update(self.ATTRIBUTES)
 
         # 'class' is a reserved Python keyword, so support using 'class_' and
         # 'classes'
@@ -37,19 +39,20 @@ class _HTMLElement(_Element):
         if classnames:
             attributes['class'] = ' '.join(classnames)
 
-        self.attributes.update(attributes)
+        self.set_attributes(**attributes)
 
     def set_attribute(self, key, value):
         self.attributes[key] = value
 
     def set_attributes(self, **attributes):
-        self.attributes.update(attributes)
+        # 'attributes' is still an unordered dict here, i.e. adding it unsorted
+        # would make the key order variable from one run to the other
+        self.attributes.update(sorted(attributes.items()))
 
     def _compose_start_tag(self):
         if self.attributes:
             attributes = ' '.join('='.join((key, '"{}"'.format(value)))
-                                  for key, value in
-                                  sorted(self.attributes.items()))
+                                  for key, value in self.attributes.items())
             return ' '.join((self.tag, attributes))
         else:
             return self.tag
