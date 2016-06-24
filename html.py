@@ -119,8 +119,8 @@ class _HTMLNormalElement(_HTMLElement, ElementContainer):
         else:
             sep = '\n'
             content = ''.join((self.INDENTATION,
-                               content.replace('\n', ''.join(('\n',
-                                                          self.INDENTATION)))))
+                               content.replace('\n', ''.join((
+                                                    '\n', self.INDENTATION)))))
         end = '</{}>'.format(self.tag)
         return sep.join((start, content, end))
 
@@ -350,7 +350,7 @@ class Document:
     def write(self, filename):
         with open(filename, 'w') as f:
             f.write(self.compose().encode('ascii', 'xmlcharrefreplace'
-                                                            ).decode('utf-8'))
+                                          ).decode('utf-8'))
 
 
 class SimpleDocument(Document):
