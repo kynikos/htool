@@ -23,10 +23,12 @@ class _HTMLElement(_Element):
         # 'class' is a reserved Python keyword, so support using 'class_' and
         # 'classes'
         # TODO: Document this, including the fact that it's not possible to
-        #       assign literal 'class_' or 'classes' attributes, as they will
-        #       always be converted
+        #       assign literal 'class_' or 'classes' attributes from keyword,
+        #       as they will always be converted; suggest to use set_attribute
+        #       in that case, and for other attributes such as 'data-*', or
+        #       Tag(**{'class': 'name'})
         # Note that a 'class' parameter can still be passed directly with e.g.
-        # Tag(**{'class': 'name'})
+        # Tag(**{'class': 'name'}), so make sure to no override it here
         classnames = attributes.get('class', '').split()
         classnames.extend(attributes.get('class_', '').split())
         attributes.pop('class_', None)
