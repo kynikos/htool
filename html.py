@@ -79,9 +79,13 @@ class ElementContainer(_Element):
         self.children.insert(0, element)
 
     def append_child(self, element):
-        if not isinstance(element, _Element):
-            element = _TextNode(element)
-        self.children.append(element)
+        # Accept (and safely ignore) None elements, so that they can be
+        # added to parents with e.g. ternary operators, as in
+        # P('foo', Span('bar') if abc else None)
+        if element is not None:
+            if not isinstance(element, _Element):
+                element = _TextNode(element)
+            self.children.append(element)
 
     def append_children(self, *elements):
         for element in elements:
