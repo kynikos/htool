@@ -29,6 +29,8 @@ class _HTMLElement(_Element):
         #       as they will always be converted; suggest to use set_attribute
         #       in that case, and for other attributes such as 'data-*', or
         #       Tag(**{'class': 'name'})
+        #       Also document that duplicate classes are automatically removed,
+        #       and, again, using set_attribute is the way to force them
         # Note that a 'class' parameter can still be passed directly with e.g.
         # Tag(**{'class': 'name'}), so make sure to no override it here
         classnames = attributes.get('class', '').split()
@@ -36,8 +38,8 @@ class _HTMLElement(_Element):
         attributes.pop('class_', None)
         classnames.extend(attributes.get('classes', []))
         attributes.pop('classes', None)
-        if classnames:
-            attributes['class'] = ' '.join(classnames)
+        for cname in classnames:
+            self.add_class(cname)
 
         self.set_attributes(**attributes)
 
@@ -48,6 +50,16 @@ class _HTMLElement(_Element):
         # 'attributes' is still an unordered dict here, i.e. adding it unsorted
         # would make the key order variable from one run to the other
         self.attributes.update(sorted(attributes.items()))
+
+    def add_class(self, name):
+        # Prevent duplication; duplicate classes can be forced with
+        # set_attribute
+        # Do not use a set, or the class order will be lost (not meaningful,
+        # but would create different html output every time)
+        classes = self.attributes.get('class', '').split()
+        if name not in classes:
+            classes.append(name)
+            self.set_attribute('class', ' '.join(classes))
 
     def _compose_start_tag(self):
         if self.attributes:
