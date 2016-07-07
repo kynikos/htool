@@ -18,11 +18,18 @@
 
 from collections import OrderedDict
 import itertools
+import html
 
 
 class _Element:
     def compose(self):
         raise NotImplementedError()
+
+    def _escape(self, rawtext):
+        # TODO: Make this smart and leave already-escaped text as is, e.g.
+        #       named character references (e.g. '&gt;')
+        #       Probably use the html.entities.html5 dictionary
+        return html.escape(rawtext)
 
 
 class Doctype(_Element):
@@ -33,6 +40,7 @@ class Doctype(_Element):
 class _HTMLElement(_Element):
     TAG = None
     ATTRIBUTES = OrderedDict()
+    ESCAPE = _Element._escape
 
     def __init__(self, **attributes):
         super().__init__()
@@ -81,7 +89,9 @@ class _HTMLElement(_Element):
 
     def _compose_start_tag(self):
         if self.attributes:
-            attributes = ' '.join('='.join((key, '"{}"'.format(value)))
+            attributes = ' '.join('='.join((
+                                  self.ESCAPE(str(key)),
+                                  '"{}"'.format(self.ESCAPE(str(value)))))
                                   for key, value in self.attributes.items())
             return ' '.join((self.tag, attributes))
         else:
@@ -94,12 +104,14 @@ class _HTMLVoidElement(_HTMLElement):
 
 
 class _TextNode(_Element):
+    ESCAPE = _Element._escape
+
     def __init__(self, text):
         super().__init__()
         self.text = text
 
     def compose(self):
-        return self.text
+        return self.ESCAPE(str(self.text))
 
 
 class ElementContainer(_Element):
