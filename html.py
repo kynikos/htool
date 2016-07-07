@@ -311,6 +311,10 @@ class Span(_HTMLNormalElement):
     TAG = 'span'
 
 
+class Strong(_HTMLNormalElement):
+    TAG = 'strong'
+
+
 class Style(_HTMLNormalElement):
     TAG = 'style'
 
