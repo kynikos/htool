@@ -22,6 +22,9 @@ import html
 
 
 class _Element:
+    def __init__(self):
+        self.parent_element = None
+
     def compose(self):
         raise NotImplementedError()
 
@@ -120,19 +123,21 @@ class ElementContainer(_Element):
         self.children = []
         self.append_children(*children)
 
-    def prepend_child(self, element):
+    def _prepare_child(self, element):
         if not isinstance(element, _Element):
             element = _TextNode(element)
-        self.children.insert(0, element)
+        element.parent_element = self
+        return element
+
+    def prepend_child(self, element):
+        self.children.insert(0, self._prepare_child(element))
 
     def append_child(self, element):
         # Accept (and safely ignore) None elements, so that they can be
         # added to parents with e.g. ternary operators, as in
         # P('foo', Span('bar') if abc else None)
         if element is not None:
-            if not isinstance(element, _Element):
-                element = _TextNode(element)
-            self.children.append(element)
+            self.children.append(self._prepare_child(element))
 
     def append_children(self, *elements):
         for element in elements:
