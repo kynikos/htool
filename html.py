@@ -21,18 +21,41 @@ import itertools
 import html
 
 
+# TODO: Document that this function can be customised by overriding it globally
+#       at the module level, or for each object by setting the 'ESCAPE_*'
+#       attributes
+def ESCAPE(rawtext):
+    # TODO: Make this smart and leave already-escaped text as is, e.g.
+    #       named character references (e.g. '&gt;')
+    #       Probably use the html.entities.html5 dictionary
+    return html.escape(rawtext)
+
+ESCAPE_TEXT = None
+ESCAPE_ATTR_NAME = None
+ESCAPE_ATTR_VALUE = None
+
+
 class _Element:
+    # TODO: Document that when the class attributes are overridden, also a
+    #       'self' argument must be accepted; when overriding the global
+    #       attributes, or monkey-patching the self.escape_* object attributes,
+    #       only the 'rawtext' argument is needed
+    ESCAPE = None
+    ESCAPE_TEXT = None
+    ESCAPE_ATTR_NAME = None
+    ESCAPE_ATTR_VALUE = None
+
     def __init__(self):
         self.parent_element = None
+        self.escape_text = (self.ESCAPE_TEXT or self.ESCAPE or ESCAPE_TEXT or
+                            ESCAPE)
+        self.escape_attr_name = (self.ESCAPE_ATTR_NAME or self.ESCAPE or
+                                 ESCAPE_ATTR_NAME or ESCAPE)
+        self.escape_attr_value = (self.ESCAPE_ATTR_VALUE or self.ESCAPE or
+                                  ESCAPE_ATTR_VALUE or ESCAPE)
 
     def compose(self):
         raise NotImplementedError()
-
-    def _escape(self, rawtext):
-        # TODO: Make this smart and leave already-escaped text as is, e.g.
-        #       named character references (e.g. '&gt;')
-        #       Probably use the html.entities.html5 dictionary
-        return html.escape(rawtext)
 
 
 class Doctype(_Element):
@@ -43,7 +66,6 @@ class Doctype(_Element):
 class _HTMLElement(_Element):
     TAG = None
     ATTRIBUTES = OrderedDict()
-    ESCAPE = _Element._escape
 
     def __init__(self, **attributes):
         super().__init__()
@@ -92,10 +114,10 @@ class _HTMLElement(_Element):
 
     def _compose_start_tag(self):
         if self.attributes:
-            attributes = ' '.join('='.join((
-                                  self.ESCAPE(str(key)),
-                                  '"{}"'.format(self.ESCAPE(str(value)))))
-                                  for key, value in self.attributes.items())
+            attributes = ' '.join(
+                '='.join((self.escape_attr_name(str(key)),
+                          '"{}"'.format(self.escape_attr_value(str(value)))))
+                for key, value in self.attributes.items())
             return ' '.join((self.tag, attributes))
         else:
             return self.tag
@@ -107,14 +129,12 @@ class _HTMLVoidElement(_HTMLElement):
 
 
 class _TextNode(_Element):
-    ESCAPE = _Element._escape
-
     def __init__(self, text):
         super().__init__()
         self.text = text
 
     def compose(self):
-        return self.ESCAPE(str(self.text))
+        return self.parent_element.escape_text(str(self.text))
 
 
 class ElementContainer(_Element):
@@ -314,6 +334,8 @@ class P(_HTMLNormalElement):
 
 class Script(_HTMLNormalElement):
     TAG = 'script'
+    # TODO: Document that the text isn't escaped in this case
+    ESCAPE_TEXT = lambda self, rawtext: rawtext
 
     @classmethod
     def js(cls, **attributes):
