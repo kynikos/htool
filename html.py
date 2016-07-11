@@ -1,5 +1,5 @@
 # lib.py.html - Check the status of code repositories under a root directory.
-# Copyright (C) 2015 Dario Giovannetti <dev@dariogiovannetti.net>
+# Copyright (C) 2016 Dario Giovannetti <dev@dariogiovannetti.net>
 #
 # This file is part of lib.py.html.
 #
