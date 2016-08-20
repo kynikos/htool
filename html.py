@@ -315,6 +315,10 @@ class Link(_HTMLVoidElement):
     def css(cls, path, **attributes):
         return cls(href=path, type="text/css", rel="stylesheet", **attributes)
 
+    @classmethod
+    def favicon(cls, path, **attributes):
+        return cls(href=path, rel="icon", **attributes)
+
 
 class Meta(_HTMLVoidElement):
     TAG = 'meta'
