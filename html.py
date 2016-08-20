@@ -181,6 +181,10 @@ class ElementContainer(_Element):
         return '\n'.join(child.compose() for child in self.children)
 
 
+class RawText(ElementContainer):
+    ESCAPE_TEXT = lambda self, rawtext: rawtext
+
+
 class _HTMLNormalElement(_HTMLElement, ElementContainer):
     INDENTATION = ' ' * 4
 
