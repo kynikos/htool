@@ -63,6 +63,17 @@ class Doctype(_Element):
         return '<!doctype html>'
 
 
+class Comment(_Element):
+    def __init__(self, *text):
+        super().__init__()
+        self.text = ''.join(text)
+
+    def compose(self):
+        # TODO: Does text have to be escaped?
+        # TODO: Optionally surround text with spaces?
+        return self.text.join(('<!--', '-->'))
+
+
 class _HTMLElement(_Element):
     TAG = None
     ATTRIBUTES = OrderedDict()
