@@ -139,15 +139,6 @@ class _HTMLVoidElement(_HTMLElement):
         return '<{} />'.format(self._compose_start_tag())
 
 
-class _TextNode(_Element):
-    def __init__(self, text):
-        super().__init__()
-        self.text = text
-
-    def compose(self):
-        return self.parent_element.escape_text(str(self.text))
-
-
 class ElementContainer(_Element):
     def __init__(self, *children):
         super().__init__()
@@ -179,6 +170,15 @@ class ElementContainer(_Element):
 
     def compose(self):
         return '\n'.join(child.compose() for child in self.children)
+
+
+class _TextNode(_Element):
+    def __init__(self, text):
+        super().__init__()
+        self.text = text
+
+    def compose(self):
+        return self.parent_element.escape_text(str(self.text))
 
 
 class RawText(ElementContainer):
