@@ -357,8 +357,8 @@ class Script(_HTMLNormalElement):
     ESCAPE_TEXT = lambda self, rawtext: rawtext
 
     @classmethod
-    def js(cls, **attributes):
-        return cls(type='text/javascript', **attributes)
+    def js(cls, *children, **attributes):
+        return cls(*children, type='text/javascript', **attributes)
 
 
 class Select(_HTMLNormalElement):
