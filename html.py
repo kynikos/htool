@@ -319,6 +319,10 @@ class Hr(_HTMLVoidElement):
     TAG = 'hr'
 
 
+class Img(_HTMLVoidElement):
+    TAG = 'img'
+
+
 class Li(_HTMLNormalElement):
     TAG = 'li'
 
@@ -339,6 +343,14 @@ class Meta(_HTMLVoidElement):
     TAG = 'meta'
 
 
+class Noscript(_HTMLNormalElement):
+    TAG = 'noscript'
+
+
+class Object(_HTMLNormalElement):
+    TAG = 'object'
+
+
 class Ol(_List):
     TAG = 'ol'
 
@@ -349,6 +361,10 @@ class Option(_HTMLNormalElement):
 
 class P(_HTMLNormalElement):
     TAG = 'p'
+
+
+class Param(_HTMLVoidElement):
+    TAG = 'param'
 
 
 class Script(_HTMLNormalElement):
