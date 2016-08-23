@@ -63,6 +63,15 @@ class Doctype(_Element):
         return '<!doctype html>'
 
 
+class RawText(_Element):
+    def __init__(self, *text):
+        super().__init__()
+        self.text = ''.join(text)
+
+    def compose(self):
+        return self.text
+
+
 class Comment(_Element):
     def __init__(self, *text):
         super().__init__()
@@ -72,6 +81,15 @@ class Comment(_Element):
         # TODO: Does text have to be escaped?
         # TODO: Optionally surround text with spaces?
         return self.text.join(('<!--', '-->'))
+
+
+class _TextNode(_Element):
+    def __init__(self, text):
+        super().__init__()
+        self.text = text
+
+    def compose(self):
+        return self.parent_element.escape_text(str(self.text))
 
 
 class _HTMLElement(_Element):
@@ -170,19 +188,6 @@ class ElementContainer(_Element):
 
     def compose(self):
         return '\n'.join(child.compose() for child in self.children)
-
-
-class _TextNode(_Element):
-    def __init__(self, text):
-        super().__init__()
-        self.text = text
-
-    def compose(self):
-        return self.parent_element.escape_text(str(self.text))
-
-
-class RawText(ElementContainer):
-    ESCAPE_TEXT = lambda self, rawtext: rawtext
 
 
 class _HTMLNormalElement(_HTMLElement, ElementContainer):
