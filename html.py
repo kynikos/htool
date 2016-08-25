@@ -54,12 +54,12 @@ class _Element:
         self.escape_attr_value = (self.ESCAPE_ATTR_VALUE or self.ESCAPE or
                                   ESCAPE_ATTR_VALUE or ESCAPE)
 
-    def compose(self):
+    def compile(self):
         raise NotImplementedError()
 
 
 class Doctype(_Element):
-    def compose(self):
+    def compile(self):
         return '<!doctype html>'
 
 
@@ -68,7 +68,7 @@ class RawText(_Element):
         super().__init__()
         self.text = ''.join(text)
 
-    def compose(self):
+    def compile(self):
         return self.text
 
 
@@ -77,7 +77,7 @@ class Comment(_Element):
         super().__init__()
         self.text = ''.join(text)
 
-    def compose(self):
+    def compile(self):
         # TODO: Does text have to be escaped?
         # TODO: Optionally surround text with spaces?
         return self.text.join(('<!--', '-->'))
@@ -88,7 +88,7 @@ class _TextNode(_Element):
         super().__init__()
         self.text = text
 
-    def compose(self):
+    def compile(self):
         return self.parent_element.escape_text(str(self.text))
 
 
@@ -153,7 +153,7 @@ class _HTMLElement(_Element):
 
 
 class _HTMLVoidElement(_HTMLElement):
-    def compose(self):
+    def compile(self):
         return '<{} />'.format(self._compose_start_tag())
 
 
@@ -186,8 +186,8 @@ class ElementContainer(_Element):
     def empty(self):
         self.children.clear()
 
-    def compose(self):
-        return '\n'.join(child.compose() for child in self.children)
+    def compile(self):
+        return '\n'.join(child.compile() for child in self.children)
 
 
 class _HTMLNormalElement(_HTMLElement, ElementContainer):
@@ -197,9 +197,9 @@ class _HTMLNormalElement(_HTMLElement, ElementContainer):
         _HTMLElement.__init__(self, **attributes)
         ElementContainer.__init__(self, *children)
 
-    def compose(self):
+    def compile(self):
         start = '<{}>'.format(self._compose_start_tag())
-        content = ElementContainer.compose(self)
+        content = ElementContainer.compile(self)
         if not self.children or (len(self.children) == 1 and
                                  isinstance(self.children[0], _TextNode)):
             sep = ''
@@ -457,12 +457,12 @@ class Document:
         self.doctype = doctype
         self.html = html
 
-    def compose(self):
-        return '\n'.join((self.doctype.compose(), self.html.compose()))
+    def compile(self):
+        return '\n'.join((self.doctype.compile(), self.html.compile()))
 
     def write(self, filename):
         with open(filename, 'w') as f:
-            f.write(self.compose().encode('ascii', 'xmlcharrefreplace'
+            f.write(self.compile().encode('ascii', 'xmlcharrefreplace'
                                           ).decode('utf-8'))
 
 
