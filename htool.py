@@ -1,20 +1,20 @@
-# lib.py.html - Check the status of code repositories under a root directory.
+# lib.py.htool - Check the status of code repositories under a root directory.
 # Copyright (C) 2016 Dario Giovannetti <dev@dariogiovannetti.net>
 #
-# This file is part of lib.py.html.
+# This file is part of lib.py.htool.
 #
-# lib.py.html is free software: you can redistribute it and/or modify
+# lib.py.htool is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# lib.py.html is distributed in the hope that it will be useful,
+# lib.py.htool is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with lib.py.html.  If not, see <http://www.gnu.org/licenses/>.
+# along with lib.py.htool.  If not, see <http://www.gnu.org/licenses/>.
 
 from collections import OrderedDict
 import itertools
