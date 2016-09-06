@@ -16,6 +16,12 @@
 # You should have received a copy of the GNU General Public License
 # along with lib.py.htool.  If not, see <http://www.gnu.org/licenses/>.
 
+# The module must also support Python 2
+# http://python-future.org/
+from __future__ import (absolute_import, division,
+                        print_function, unicode_literals)
+from builtins import *
+
 from collections import OrderedDict
 import itertools
 import html
@@ -35,7 +41,7 @@ ESCAPE_ATTR_NAME = None
 ESCAPE_ATTR_VALUE = None
 
 
-class _Element:
+class _Element(object):
     # TODO: Document that when the class attributes are overridden, also a
     #       'self' argument must be accepted; when overriding the global
     #       attributes, or monkey-patching the self.escape_* object attributes,
@@ -452,7 +458,7 @@ class Ul(_List):
     TAG = 'ul'
 
 
-class Document:
+class Document(object):
     def __init__(self, html, doctype=Doctype()):
         self.doctype = doctype
         self.html = html
@@ -467,8 +473,17 @@ class Document:
 
 
 class SimpleDocument(Document):
-    def __init__(self, title, description, *body_elements, lang='en',
-                 base=None, css=None, style=None, js=None):
+    def __init__(self, title, description, *body_elements, **kwargs):
+        # Python 2 must be supported, so the following definition can't be
+        # used...
+        # __init__(self, title, description, *body_elements, lang='en',
+        #          base=None, css=None, style=None, js=None):
+        lang = kwargs.pop('lang', 'en')
+        base = kwargs.pop('base', None)
+        css = kwargs.pop('css', None)
+        style = kwargs.pop('style', None)
+        js = kwargs.pop('js', None)
+
         html = Html(lang=lang)
 
         head = Head(Title(title),
