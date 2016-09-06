@@ -27,86 +27,129 @@ import itertools
 import html
 
 
-# TODO: Document that this function can be customised by overriding it globally
-#       at the module level, or for each object by setting the 'ESCAPE_*'
-#       attributes
-def ESCAPE(rawtext):
-    # TODO: Make this smart and leave already-escaped text as is, e.g.
-    #       named character references (e.g. '&gt;')
+class _Text(object):
+    def __init__(self, rawtext):
+        self.raw = rawtext
+
+
+class TextRaw(_Text):
+    def __init__(self, rawtext):
+        super().__init__(rawtext)
+        self.escaped = rawtext
+
+
+class TextEscaped(_Text):
+    # TODO: Make another smarter class that leaves already-escaped text as
+    #       is, e.g. named character references (e.g. '&gt;')
     #       Probably use the html.entities.html5 dictionary
-    return html.escape(rawtext)
+    def __init__(self, rawtext):
+        super().__init__(rawtext)
+        self.escaped = html.escape(str(rawtext))
 
-ESCAPE_TEXT = None
-ESCAPE_ATTR_NAME = None
-ESCAPE_ATTR_VALUE = None
+# TODO: Document that the _Text classes to be used can be also set by
+#       overriding the global 'DEFAULT_ESCAPE_*' module attributes, or for each
+#       object by setting its 'DEFAULT_ESCAPE_*' attributes
+DEFAULT_ESCAPE = None
+DEFAULT_ESCAPE_TEXT = None
+DEFAULT_ESCAPE_ATTR_NAME = None
+DEFAULT_ESCAPE_ATTR_VALUE = None
 
 
-class _Element(object):
-    # TODO: Document that when the class attributes are overridden, also a
-    #       'self' argument must be accepted; when overriding the global
-    #       attributes, or monkey-patching the self.escape_* object attributes,
-    #       only the 'rawtext' argument is needed
-    ESCAPE = None
-    ESCAPE_TEXT = None
-    ESCAPE_ATTR_NAME = None
-    ESCAPE_ATTR_VALUE = None
-
+class _Node(object):
     def __init__(self):
+        # parent_element is modified directly, it isn't set with an __init__
+        # parameter because positional arguments should be left only to
+        # represent elements
         self.parent_element = None
-        self.escape_text = (self.ESCAPE_TEXT or self.ESCAPE or ESCAPE_TEXT or
-                            ESCAPE)
-        self.escape_attr_name = (self.ESCAPE_ATTR_NAME or self.ESCAPE or
-                                 ESCAPE_ATTR_NAME or ESCAPE)
-        self.escape_attr_value = (self.ESCAPE_ATTR_VALUE or self.ESCAPE or
-                                  ESCAPE_ATTR_VALUE or ESCAPE)
 
     def compile(self):
         raise NotImplementedError()
 
 
-class Doctype(_Element):
+class Doctype(_Node):
     def compile(self):
         return '<!doctype html>'
 
 
-class RawText(_Element):
-    def __init__(self, *text):
+class _TextNode(_Node):
+    def __init__(self, parent_element, text):
         super().__init__()
-        self.text = ''.join(text)
+        self.parent_element = parent_element
+        self.text = text if isinstance(
+            text, _Text) else self.parent_element.DefaultContentEscape(text)
 
     def compile(self):
-        return self.text
+        return self.text.escaped
+
+
+class _Element(_Node):
+    # TODO: Document that when the class attributes are overridden, also a
+    #       'self' argument must be accepted; when overriding the global
+    #       attributes, or monkey-patching the self.escape_* object attributes,
+    #       only the 'rawtext' argument is needed
+    #       Note that this was tested when escaping was done with simple
+    #       functions at compilation time; now that it's done with the _Text
+    #       classes at instance creation, things may have changed
+    DEFAULT_ESCAPE = None
+    DEFAULT_ESCAPE_TEXT = None
+    DEFAULT_ESCAPE_ATTR_NAME = None
+    DEFAULT_ESCAPE_ATTR_VALUE = None
+
+    def __init__(self):
+        super().__init__()
+        # TODO: Test this "inheritance" system again, since it was reorganized
+        #       with the _Text classes
+        self.DefaultContentEscape = (self.DEFAULT_ESCAPE_TEXT or
+                                     self.DEFAULT_ESCAPE or
+                                     DEFAULT_ESCAPE_TEXT or
+                                     DEFAULT_ESCAPE or
+                                     TextEscaped)
+        self.DefaultAttributeNameEscape = (self.DEFAULT_ESCAPE_ATTR_NAME or
+                                           self.DEFAULT_ESCAPE or
+                                           DEFAULT_ESCAPE_ATTR_NAME or
+                                           DEFAULT_ESCAPE or
+                                           TextEscaped)
+        self.DefaultAttributeValueEscape = (self.DEFAULT_ESCAPE_ATTR_VALUE or
+                                            self.DEFAULT_ESCAPE or
+                                            DEFAULT_ESCAPE_ATTR_VALUE or
+                                            DEFAULT_ESCAPE or
+                                            TextEscaped)
 
 
 class Comment(_Element):
+    # TODO: Does text have to be escaped in comments?
+    # TODO: Document that the text isn't escaped in this case
+    DEFAULT_ESCAPE_TEXT = TextRaw
+
     def __init__(self, *text):
         super().__init__()
-        self.text = ''.join(text)
+        self.text = ''
+        for textbit in text:
+            if not isinstance(textbit, _Text):
+                textbit = self.DefaultContentEscape(textbit)
+            self.text = ''.join((self.text, textbit.escaped))
 
     def compile(self):
-        # TODO: Does text have to be escaped?
         # TODO: Optionally surround text with spaces?
         return self.text.join(('<!--', '-->'))
 
 
-class _TextNode(_Element):
-    def __init__(self, text):
-        super().__init__()
-        self.text = text
-
-    def compile(self):
-        return self.parent_element.escape_text(str(self.text))
-
-
 class _HTMLElement(_Element):
     TAG = None
+    # Note that the structure of ATTRIBUTES is different from self.attributes
+    # TODO: Document that these attributes are normally escaped
     ATTRIBUTES = OrderedDict()
 
     def __init__(self, **attributes):
         super().__init__()
         self.tag = self.TAG
+        # TODO: Document that duplicate attribute names are not supported
+        #       (i.e. setting an attribute with a certain name always
+        #       overwrites if the name already exists)
         self.attributes = OrderedDict()
-        self.attributes.update(self.ATTRIBUTES)
+        # Don't use self.set_attributes because that's re-sorting the keys
+        for name, value in self.ATTRIBUTES.items():
+            self.set_attribute(name, value)
 
         # 'class' is a reserved Python keyword, so support using 'class_' and
         # 'classes'
@@ -129,31 +172,47 @@ class _HTMLElement(_Element):
 
         self.set_attributes(**attributes)
 
-    def set_attribute(self, key, value):
-        self.attributes[key] = value
+    def get_attribute(self, name):
+        return self.attributes[name][1].raw
+
+    def set_attribute(self, name, value):
+        if not isinstance(name, _Text):
+            name = self.DefaultAttributeNameEscape(name)
+        if not isinstance(value, _Text):
+            value = self.DefaultAttributeValueEscape(value)
+        self.attributes[name.escaped] = (name, value)
 
     def set_attributes(self, **attributes):
         # 'attributes' is still an unordered dict here, i.e. adding it unsorted
         # would make the key order variable from one run to the other
-        self.attributes.update(sorted(attributes.items()))
+        for name, value in sorted(attributes.items()):
+            self.set_attribute(name, value)
 
-    def add_class(self, name):
+    def add_class(self, cname):
         # Prevent duplication; duplicate classes can be forced with
         # set_attribute
         # Do not use a set, or the class order will be lost (not meaningful,
         # but would create different html output every time)
-        classes = self.attributes.get('class', '').split()
-        if name not in classes:
-            classes.append(name)
+        try:
+            class_ = self.get_attribute('class')
+        except KeyError:
+            classes = []
+        else:
+            classes = class_.split()
+        if not isinstance(cname, _Text):
+            cname = self.DefaultAttributeValueEscape(cname)
+        if cname.escaped not in classes:
+            classes.append(cname.escaped)
             self.set_attribute('class', ' '.join(classes))
 
     def _compose_start_tag(self):
         if self.attributes:
-            attributes = ' '.join(
-                '='.join((self.escape_attr_name(str(key)),
-                          '"{}"'.format(self.escape_attr_value(str(value)))))
-                for key, value in self.attributes.items())
-            return ' '.join((self.tag, attributes))
+            attributes = ''
+            for escname, (name, value) in self.attributes.items():
+                escvalue = '"{}"'.format(value.escaped)
+                attribute = '='.join((escname, escvalue))
+                attributes = ' '.join((attributes, attribute))
+            return ''.join((self.tag, attributes))
         else:
             return self.tag
 
@@ -171,8 +230,9 @@ class ElementContainer(_Element):
 
     def _prepare_child(self, element):
         if not isinstance(element, _Element):
-            element = _TextNode(element)
-        element.parent_element = self
+            element = _TextNode(self, element)
+        else:
+            element.parent_element = self
         return element
 
     def prepend_child(self, element):
@@ -381,7 +441,7 @@ class Param(_HTMLVoidElement):
 class Script(_HTMLNormalElement):
     TAG = 'script'
     # TODO: Document that the text isn't escaped in this case
-    ESCAPE_TEXT = lambda self, rawtext: rawtext
+    DEFAULT_ESCAPE_TEXT = TextRaw
 
     @classmethod
     def js(cls, *children, **attributes):
