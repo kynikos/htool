@@ -317,16 +317,80 @@ class A(_HTMLNormalElement):
         return cls(url, href=url, **attributes)
 
 
+class Abbr(_HTMLNormalElement):
+    TAG = 'abbr'
+
+
+class Address(_HTMLNormalElement):
+    TAG = 'address'
+
+
+class Area(_HTMLVoidElement):
+    TAG = 'area'
+
+
+class Article(_HTMLNormalElement):
+    TAG = 'article'
+
+
+class Aside(_HTMLNormalElement):
+    TAG = 'aside'
+
+
+class Audio(_HTMLNormalElement):
+    TAG = 'audio'
+
+
+class B(_HTMLNormalElement):
+    TAG = 'b'
+
+
 class Base(_HTMLVoidElement):
     TAG = 'base'
+
+
+class Bdi(_HTMLNormalElement):
+    TAG = 'bdi'
+
+
+class Bdo(_HTMLNormalElement):
+    TAG = 'bdo'
+
+
+class Blockquote(_HTMLNormalElement):
+    TAG = 'blockquote'
 
 
 class Body(_HTMLNormalElement):
     TAG = 'body'
 
 
+class Br(_HTMLVoidElement):
+    TAG = 'br'
+
+
+class Button(_HTMLNormalElement):
+    TAG = 'button'
+
+
+class Canvas(_HTMLNormalElement):
+    TAG = 'canvas'
+
+
 class Caption(_HTMLNormalElement):
     TAG = 'caption'
+
+
+class Cite(_HTMLNormalElement):
+    TAG = 'cite'
+
+
+class Code(_HTMLNormalElement):
+    TAG = 'code'
+
+
+class Col(_HTMLVoidElement):
+    TAG = 'col'
 
 
 class Colgroup(_HTMLNormalElement):
@@ -346,12 +410,72 @@ class Colgroup(_HTMLNormalElement):
         return self
 
 
-class Col(_HTMLVoidElement):
-    TAG = 'col'
+class Data(_HTMLNormalElement):
+    TAG = 'data'
+
+
+class Datalist(_HTMLNormalElement):
+    TAG = 'datalist'
+
+
+class Dd(_HTMLNormalElement):
+    TAG = 'dd'
+
+
+class Del(_HTMLNormalElement):
+    TAG = 'del'
+
+
+class Details(_HTMLNormalElement):
+    TAG = 'details'
+
+
+class Dfn(_HTMLNormalElement):
+    TAG = 'dfn'
+
+
+class Dialog(_HTMLNormalElement):
+    TAG = 'dialog'
 
 
 class Div(_HTMLNormalElement):
     TAG = 'div'
+
+
+class Dl(_HTMLNormalElement):
+    TAG = 'dl'
+
+
+class Dt(_HTMLNormalElement):
+    TAG = 'dt'
+
+
+class Em(_HTMLNormalElement):
+    TAG = 'em'
+
+
+class Embed(_HTMLVoidElement):
+    TAG = 'embed'
+
+
+class Fieldset(_HTMLNormalElement):
+    TAG = 'fieldset'
+
+
+class Figcaption(_HTMLNormalElement):
+    TAG = 'figcaption'
+
+
+class Figure(_HTMLNormalElement):
+    TAG = 'figure'
+
+
+class Footer(_HTMLNormalElement):
+    TAG = 'footer'
+
+
+class Form(_HTMLNormalElement):
+    TAG = 'form'
 
 
 class H1(_HTMLNormalElement):
@@ -382,16 +506,52 @@ class Head(_HTMLNormalElement):
     TAG = 'head'
 
 
-class Html(_HTMLNormalElement):
-    TAG = 'html'
+class Header(_HTMLNormalElement):
+    TAG = 'header'
+
+
+class Hgroup(_HTMLNormalElement):
+    TAG = 'hgroup'
 
 
 class Hr(_HTMLVoidElement):
     TAG = 'hr'
 
 
+class Html(_HTMLNormalElement):
+    TAG = 'html'
+
+
+class I(_HTMLNormalElement):
+    TAG = 'i'
+
+
+class Iframe(_HTMLNormalElement):
+    TAG = 'iframe'
+
+
 class Img(_HTMLVoidElement):
     TAG = 'img'
+
+
+class Input(_HTMLVoidElement):
+    TAG = 'input'
+
+
+class Ins(_HTMLNormalElement):
+    TAG = 'ins'
+
+
+class Kbd(_HTMLNormalElement):
+    TAG = 'kbd'
+
+
+class Label(_HTMLNormalElement):
+    TAG = 'label'
+
+
+class Legend(_HTMLNormalElement):
+    TAG = 'legend'
 
 
 class Li(_HTMLNormalElement):
@@ -410,8 +570,36 @@ class Link(_HTMLVoidElement):
         return cls(href=path, rel="icon", **attributes)
 
 
+class Main(_HTMLNormalElement):
+    TAG = 'main'
+
+
+class Map(_HTMLNormalElement):
+    TAG = 'map'
+
+
+class Mark(_HTMLNormalElement):
+    TAG = 'mark'
+
+
+class Menu(_HTMLNormalElement):
+    TAG = 'menu'
+
+
+class Menuitem(_HTMLNormalElement):
+    TAG = 'menuitem'
+
+
 class Meta(_HTMLVoidElement):
     TAG = 'meta'
+
+
+class Meter(_HTMLNormalElement):
+    TAG = 'meter'
+
+
+class Nav(_HTMLNormalElement):
+    TAG = 'nav'
 
 
 class Noscript(_HTMLNormalElement):
@@ -426,8 +614,16 @@ class Ol(_List):
     TAG = 'ol'
 
 
+class Optgroup(_HTMLNormalElement):
+    TAG = 'optgroup'
+
+
 class Option(_HTMLNormalElement):
     TAG = 'option'
+
+
+class Output(_HTMLNormalElement):
+    TAG = 'output'
 
 
 class P(_HTMLNormalElement):
@@ -436,6 +632,46 @@ class P(_HTMLNormalElement):
 
 class Param(_HTMLVoidElement):
     TAG = 'param'
+
+
+class Picture(_HTMLNormalElement):
+    TAG = 'picture'
+
+
+class Pre(_HTMLNormalElement):
+    TAG = 'pre'
+
+
+class Progress(_HTMLNormalElement):
+    TAG = 'progress'
+
+
+class Q(_HTMLNormalElement):
+    TAG = 'q'
+
+
+class Rp(_HTMLNormalElement):
+    TAG = 'rp'
+
+
+class Rt(_HTMLNormalElement):
+    TAG = 'rt'
+
+
+class Rtc(_HTMLNormalElement):
+    TAG = 'rtc'
+
+
+class Ruby(_HTMLNormalElement):
+    TAG = 'ruby'
+
+
+class S(_HTMLNormalElement):
+    TAG = 's'
+
+
+class Samp(_HTMLNormalElement):
+    TAG = 'samp'
 
 
 class Script(_HTMLNormalElement):
@@ -448,8 +684,24 @@ class Script(_HTMLNormalElement):
         return cls(*children, type='text/javascript', **attributes)
 
 
+class Section(_HTMLNormalElement):
+    TAG = 'section'
+
+
 class Select(_HTMLNormalElement):
     TAG = 'select'
+
+
+class Shadow(_HTMLNormalElement):
+    TAG = 'select'
+
+
+class Small(_HTMLNormalElement):
+    TAG = 'small'
+
+
+class Source(_HTMLVoidElement):
+    TAG = 'source'
 
 
 class Span(_HTMLNormalElement):
@@ -464,6 +716,18 @@ class Style(_HTMLNormalElement):
     TAG = 'style'
 
 
+class Sub(_HTMLNormalElement):
+    TAG = 'sub'
+
+
+class Summary(_HTMLNormalElement):
+    TAG = 'summary'
+
+
+class Sup(_HTMLNormalElement):
+    TAG = 'sup'
+
+
 class Table(_Table):
     TAG = 'table'
 
@@ -476,6 +740,14 @@ class Td(_HTMLNormalElement):
     TAG = 'td'
 
 
+class Template(_HTMLNormalElement):
+    TAG = 'template'
+
+
+class Textarea(_HTMLNormalElement):
+    TAG = 'textarea'
+
+
 class Tfoot(_Table):
     TAG = 'tfoot'
 
@@ -486,6 +758,10 @@ class Th(_HTMLNormalElement):
 
 class Thead(_Table):
     TAG = 'thead'
+
+
+class Time(_HTMLNormalElement):
+    TAG = 'time'
 
 
 class Title(_HTMLNormalElement):
@@ -514,8 +790,28 @@ class Tr(_HTMLNormalElement):
             self.append_data_cell(cell)
 
 
+class Track(_HTMLVoidElement):
+    TAG = 'track'
+
+
+class U(_HTMLNormalElement):
+    TAG = 'u'
+
+
 class Ul(_List):
     TAG = 'ul'
+
+
+class Var(_HTMLNormalElement):
+    TAG = 'var'
+
+
+class Video(_HTMLNormalElement):
+    TAG = 'video'
+
+
+class Wbr(_HTMLNormalElement):
+    TAG = 'wbr'
 
 
 class Document(object):
