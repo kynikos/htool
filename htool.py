@@ -253,10 +253,12 @@ class ElementContainer(_Element):
         self.children.clear()
 
     def compile(self):
+        # TODO: Allow customizing the glue string
         return '\n'.join(child.compile() for child in self.children)
 
 
 class _HTMLNormalElement(_HTMLElement, ElementContainer):
+    # TODO: Allow resetting the indentation from a particular node in the tree
     INDENTATION = ' ' * 4
 
     def __init__(self, *children, **attributes):
@@ -266,6 +268,7 @@ class _HTMLNormalElement(_HTMLElement, ElementContainer):
     def compile(self):
         start = '<{}>'.format(self._compose_start_tag())
         content = ElementContainer.compile(self)
+        # TODO: Allow customizing the glueing between elements
         if not self.children or (len(self.children) == 1 and
                                  isinstance(self.children[0], _TextNode)):
             sep = ''
