@@ -57,3 +57,21 @@ class ElementContainer(_ElementContainer):
     """
     # Not an HTML tag, but can be expected to be in this module
     pass
+
+
+class _File(_Element):
+    def __init__(self, filename):
+        super().__init__()
+        with open(filename, 'r') as f:
+            self.text = self.DefaultContentEscape(f.read())
+
+    def compile(self):
+        return self.text.escaped
+
+
+class TextFile(_File):
+    pass
+
+
+class HTMLFile(_File):
+    DEFAULT_ESCAPE_TEXT = TextRaw
