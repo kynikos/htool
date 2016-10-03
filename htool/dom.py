@@ -45,6 +45,11 @@ class _Node(object):
     def compile(self):
         raise NotImplementedError()
 
+    def write(self, filename):
+        with open(filename, 'w') as f:
+            f.write(self.compile().encode('ascii', 'xmlcharrefreplace'
+                                          ).decode('utf-8'))
+
 
 class _TextNode(_Node):
     def __init__(self, parent_element, text):
