@@ -20,9 +20,14 @@
 # http://python-future.org/
 from __future__ import (absolute_import, division,
                         print_function, unicode_literals)
-from builtins import *
+# from builtins import *
 
-import html
+try:
+    from html import escape as html_escape
+except ImportError:
+    # Old Python versions don't have html.escape()
+    from cgi import escape as _html_escape
+    html_escape = lambda text: _html_escape(text, quote=True)  # NOQA
 
 
 class _Text(object):
@@ -32,7 +37,7 @@ class _Text(object):
 
 class TextRaw(_Text):
     def __init__(self, rawtext):
-        super().__init__(rawtext)
+        super(TextRaw, self).__init__(rawtext)
         self.escaped = rawtext
 
 
@@ -41,5 +46,5 @@ class TextEscaped(_Text):
     #       is, e.g. named character references (e.g. '&gt;')
     #       Probably use the html.entities.html5 dictionary
     def __init__(self, rawtext):
-        super().__init__(rawtext)
-        self.escaped = html.escape(str(rawtext))
+        super(TextEscaped, self).__init__(rawtext)
+        self.escaped = html_escape(str(rawtext))

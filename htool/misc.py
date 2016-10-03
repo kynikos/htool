@@ -20,7 +20,7 @@
 # http://python-future.org/
 from __future__ import (absolute_import, division,
                         print_function, unicode_literals)
-from builtins import *
+# from builtins import *
 
 from .dom import _Node, _Element, _ElementContainer
 from .text import _Text, TextRaw
@@ -39,7 +39,7 @@ class Comment(_Element):
     DEFAULT_ESCAPE_TEXT = TextRaw
 
     def __init__(self, *text):
-        super().__init__()
+        super(Comment, self).__init__()
         self.text = ''
         for textbit in text:
             if not isinstance(textbit, _Text):
@@ -61,7 +61,7 @@ class ElementContainer(_ElementContainer):
 
 class _File(_Element):
     def __init__(self, filename):
-        super().__init__()
+        super(_File, self).__init__()
         with open(filename, 'r') as f:
             self.text = self.DefaultContentEscape(f.read())
 

@@ -20,7 +20,7 @@
 # http://python-future.org/
 from __future__ import (absolute_import, division,
                         print_function, unicode_literals)
-from builtins import *
+# from builtins import *
 
 from collections import OrderedDict
 
@@ -53,7 +53,7 @@ class _Node(object):
 
 class _TextNode(_Node):
     def __init__(self, parent_element, text):
-        super().__init__()
+        super(_TextNode, self).__init__()
         self.parent_element = parent_element
         self.text = text if isinstance(
             text, _Text) else self.parent_element.DefaultContentEscape(text)
@@ -76,7 +76,7 @@ class _Element(_Node):
     DEFAULT_ESCAPE_ATTR_VALUE = None
 
     def __init__(self):
-        super().__init__()
+        super(_Element, self).__init__()
         # TODO: Test this "inheritance" system again, since it was reorganized
         #       with the _Text classes
         self.DefaultContentEscape = (self.DEFAULT_ESCAPE_TEXT or
@@ -103,7 +103,7 @@ class _HTMLElement(_Element):
     ATTRIBUTES = OrderedDict()
 
     def __init__(self, **attributes):
-        super().__init__()
+        super(_HTMLElement, self).__init__()
         self.tag = self.TAG
         # TODO: Document that duplicate attribute names are not supported
         #       (i.e. setting an attribute with a certain name always
@@ -186,7 +186,7 @@ class _HTMLVoidElement(_HTMLElement):
 
 class _ElementContainer(_Element):
     def __init__(self, *children):
-        super().__init__()
+        super(_ElementContainer, self).__init__()
         self.children = []
         self.append_children(*children)
 

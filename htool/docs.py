@@ -20,7 +20,7 @@
 # http://python-future.org/
 from __future__ import (absolute_import, division,
                         print_function, unicode_literals)
-from builtins import *
+# from builtins import *
 
 from .dom import _Node
 from .tags import Base, Body, Head, Html, Link, Meta, Script, Style, Title
@@ -69,4 +69,4 @@ class SimpleDocument(Document):
         body = Body(*body_elements)
 
         html.append_children(head, body)
-        super().__init__(html)
+        super(SimpleDocument, self).__init__(html)
