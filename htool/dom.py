@@ -171,7 +171,7 @@ class _HTMLElement(_Element):
         if self.attributes:
             attributes = ''
             for escname, (name, value) in self.attributes.items():
-                escvalue = '"{}"'.format(value.escaped)
+                escvalue = '"{0}"'.format(value.escaped)
                 attribute = '='.join((escname, escvalue))
                 attributes = ' '.join((attributes, attribute))
             return ''.join((self.tag, attributes))
@@ -181,7 +181,7 @@ class _HTMLElement(_Element):
 
 class _HTMLVoidElement(_HTMLElement):
     def compile(self):
-        return '<{} />'.format(self._compose_start_tag())
+        return '<{0} />'.format(self._compose_start_tag())
 
 
 class _ElementContainer(_Element):
@@ -228,7 +228,7 @@ class _HTMLNormalElement(_HTMLElement, _ElementContainer):
         _ElementContainer.__init__(self, *children)
 
     def compile(self):
-        start = '<{}>'.format(self._compose_start_tag())
+        start = '<{0}>'.format(self._compose_start_tag())
         content = _ElementContainer.compile(self)
         # TODO: Allow customizing the glueing between elements
         if not self.children or (len(self.children) == 1 and
@@ -239,5 +239,5 @@ class _HTMLNormalElement(_HTMLElement, _ElementContainer):
             content = ''.join((self.INDENTATION,
                                content.replace('\n', ''.join((
                                                     '\n', self.INDENTATION)))))
-        end = '</{}>'.format(self.tag)
+        end = '</{0}>'.format(self.tag)
         return sep.join((start, content, end))
