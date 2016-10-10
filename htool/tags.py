@@ -42,23 +42,23 @@ class _List(_HTMLNormalElement):
 
 class _Table(_HTMLNormalElement):
     # This class is too coupled with this module to be moved to a separate one
-    def append_header_row(self, *cells):
-        row = Tr()
+    def append_header_row(self, *cells, **attributes):
+        row = Tr(**attributes)
         self.append_child(row)
         row.append_header_cells(*cells)
 
-    def append_data_row(self, *cells):
-        row = Tr()
+    def append_data_row(self, *cells, **attributes):
+        row = Tr(**attributes)
         self.append_child(row)
         row.append_data_cells(*cells)
 
-    def append_header_rows(self, *rows):
+    def append_header_rows(self, *rows, **attributes):
         for row in rows:
-            self.append_header_row(*row)
+            self.append_header_row(*row, **attributes)
 
-    def append_data_rows(self, *rows):
+    def append_data_rows(self, *rows, **attributes):
         for row in rows:
-            self.append_data_row(*row)
+            self.append_data_row(*row, **attributes)
 
 
 class A(_HTMLNormalElement):
