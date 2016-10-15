@@ -47,4 +47,9 @@ class TextEscaped(_Text):
     #       Probably use the html.entities.html5 dictionary
     def __init__(self, rawtext):
         super(TextEscaped, self).__init__(rawtext)
-        self.escaped = html_escape(str(rawtext))
+        try:
+            # It's important to first html_escape, then encode, not vice versa
+            self.escaped = html_escape(rawtext).encode('ascii',
+                                                       'xmlcharrefreplace')
+        except AttributeError:
+            self.escaped = str(rawtext)
