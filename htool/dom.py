@@ -47,7 +47,7 @@ class _Node(object):
 
     def write(self, filename):
         with open(filename, 'w') as f:
-            f.write(self.compile().decode('utf-8'))
+            f.write(self.compile())
 
 
 class _TextNode(_Node):
