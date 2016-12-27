@@ -184,6 +184,8 @@ class _HTMLVoidElement(_HTMLElement):
 
 
 class _ElementContainer(_Element):
+    GLUE = '\n'
+
     def __init__(self, *children):
         super(_ElementContainer, self).__init__()
         self.children = []
@@ -214,8 +216,7 @@ class _ElementContainer(_Element):
         self.children.clear()
 
     def compile(self):
-        # TODO: Allow customizing the glue string
-        return '\n'.join(child.compile() for child in self.children)
+        return self.GLUE.join(child.compile() for child in self.children)
 
 
 class _HTMLNormalElement(_HTMLElement, _ElementContainer):
@@ -234,7 +235,9 @@ class _HTMLNormalElement(_HTMLElement, _ElementContainer):
                                  isinstance(self.children[0], _TextNode)):
             sep = ''
         else:
-            sep = '\n'
+            sep = self.GLUE
+            # BUG: If the glue is an empty string, this will still insert the
+            #      indentation before the content
             content = ''.join((self.INDENTATION,
                                content.replace('\n', ''.join((
                                                     '\n', self.INDENTATION)))))
