@@ -133,6 +133,22 @@ class _HTMLElement(_Element):
 
         self.set_attributes(**attributes)
 
+    @classmethod
+    def join(cls, *elements, **attributes):
+        """
+        This method works like Python's str.join(), for example:
+
+            Br.join(*elements)
+
+        """
+        from .misc import ElementContainer
+        container = ElementContainer()
+        if elements:
+            for element in elements[:-1]:
+                container.append_children(element, cls(**attributes))
+            container.append_child(elements[-1])
+            return container
+
     def get_attribute(self, name):
         value = self.attributes[name][1]
         if value is not None:
