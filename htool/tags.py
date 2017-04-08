@@ -319,7 +319,7 @@ class Link(_HTMLVoidElement):
 
     @classmethod
     def favicon(cls, path, **attributes):
-        return cls(href=path, rel="icon", **attributes)
+        return cls(href=path, rel="shortcut icon", **attributes)
 
 
 class Main(_HTMLNormalElement):
