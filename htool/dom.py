@@ -134,12 +134,17 @@ class _HTMLElement(_Element):
         self.set_attributes(**attributes)
 
     def get_attribute(self, name):
-        return self.attributes[name][1].raw
+        value = self.attributes[name][1]
+        if value is not None:
+            return value.raw
+        return value
 
     def set_attribute(self, name, value):
         if not isinstance(name, _Text):
             name = self.DefaultAttributeNameEscape(name)
-        if not isinstance(value, _Text):
+        # A value of None should create attributes without values
+        # TODO: Document this
+        if value is not None and not isinstance(value, _Text):
             value = self.DefaultAttributeValueEscape(value)
         self.attributes[name.escaped] = (name, value)
 
@@ -170,8 +175,11 @@ class _HTMLElement(_Element):
         if self.attributes:
             attributes = ''
             for escname, (name, value) in self.attributes.items():
-                escvalue = '"{0}"'.format(value.escaped)
-                attribute = '='.join((escname, escvalue))
+                if value is None:
+                    attribute = escname
+                else:
+                    escvalue = '"{0}"'.format(value.escaped)
+                    attribute = '='.join((escname, escvalue))
                 attributes = ' '.join((attributes, attribute))
             return ''.join((self.tag, attributes))
         else:
