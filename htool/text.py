@@ -49,8 +49,7 @@ class TextEscaped(_Text):
         super(TextEscaped, self).__init__(rawtext)
         try:
             # It's important to first html_escape, then encode, not vice versa
-            escaped = html_escape(rawtext).encode('ascii',
-                                           'xmlcharrefreplace')
+            escaped = html_escape(rawtext).encode('ascii', 'xmlcharrefreplace')
         except AttributeError:
             self.escaped = str(rawtext)
         else:

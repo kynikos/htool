@@ -260,6 +260,8 @@ class _HTMLNormalElement(_HTMLElement, _ElementContainer):
             sep = ''
         else:
             sep = self.GLUE
+            # BUG: This breaks <pre> with multiline text, <textarea> and
+            #      similar
             # BUG: If the glue is an empty string, this will still insert the
             #      indentation before the content
             content = ''.join((self.INDENTATION,
