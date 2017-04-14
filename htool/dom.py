@@ -36,13 +36,18 @@ DEFAULT_ESCAPE_ATTR_VALUE = None
 
 
 class _Node(object):
+    BREAK_BEFORE = False
+    BREAK_AFTER = False
+
     def __init__(self):
         # parent_element is modified directly, it isn't set with an __init__
         # parameter because positional arguments should be left only to
         # represent elements
+        # BUG: What happens if an element object is added as a child of two or
+        #      more different parent element objects?
         self.parent_element = None
 
-    def compile(self):
+    def compile(self, indent=""):
         raise NotImplementedError()
 
     def write(self, filename):
@@ -57,7 +62,7 @@ class _TextNode(_Node):
         self.text = text if isinstance(
             text, _Text) else self.parent_element.DefaultContentEscape(text)
 
-    def compile(self):
+    def compile(self, indent=""):
         return self.text.escaped
 
 
@@ -203,12 +208,13 @@ class _HTMLElement(_Element):
 
 
 class _HTMLVoidElement(_HTMLElement):
-    def compile(self):
+    def compile(self, indent=""):
         return '<{0} />'.format(self._compose_start_tag())
 
 
 class _ElementContainer(_Element):
-    GLUE = '\n'
+    # TODO: Allow resetting the indentation from a particular node in the tree
+    INDENTATION = ''
 
     def __init__(self, *children):
         super(_ElementContainer, self).__init__()
@@ -239,33 +245,93 @@ class _ElementContainer(_Element):
     def empty(self):
         self.children.clear()
 
-    def compile(self):
-        return self.GLUE.join(child.compile() for child in self.children)
+    def compile(self, indent=""):
+        try:
+            prevchild = self.children[0]
+        except IndexError:
+            return ""
+
+        subindent = indent + self.INDENTATION
+        # The first child's BREAK_BEFORE is taken into account in
+        # _HTMLContainerElement.compile()
+        # It's important to not indent multiline text, because it would break
+        # elements like <pre> or <textarea>
+        compiled = prevchild.compile(indent=subindent)
+        for child in self.children[1:]:
+            if prevchild.BREAK_AFTER or child.BREAK_BEFORE:
+                compiled = "".join((compiled, "\n", subindent))
+            # It's important to not indent multiline text, because it would
+            # break elements like <pre> or <textarea>
+            compiled = "".join((compiled, child.compile(indent=subindent)))
+            prevchild = child
+        # The last child's BREAK_AFTER is taken into account in
+        # _HTMLContainerElement.compile()
+        return compiled
 
 
-class _HTMLNormalElement(_HTMLElement, _ElementContainer):
-    # TODO: Allow resetting the indentation from a particular node in the tree
-    INDENTATION = ' ' * 4
+class _HTMLContainerElement(_HTMLElement, _ElementContainer):
+    INDENTATION = ' ' * 2
 
     def __init__(self, *children, **attributes):
         _HTMLElement.__init__(self, **attributes)
         _ElementContainer.__init__(self, *children)
 
-    def compile(self):
+    def compile(self, indent=""):
+        # The start tag is indented by the partent _ElementContainer if needed
         start = '<{0}>'.format(self._compose_start_tag())
-        content = _ElementContainer.compile(self)
-        # TODO: Allow customizing the glueing between elements
-        if not self.children or (len(self.children) == 1 and
-                                 isinstance(self.children[0], _TextNode)):
-            sep = ''
-        else:
-            sep = self.GLUE
-            # BUG: This breaks <pre> with multiline text, <textarea> and
-            #      similar
-            # BUG: If the glue is an empty string, this will still insert the
-            #      indentation before the content
-            content = ''.join((self.INDENTATION,
-                               content.replace('\n', ''.join((
-                                                    '\n', self.INDENTATION)))))
+        # The content is indented by _ElementContainer.compile()
+        content = _ElementContainer.compile(self, indent=indent)
         end = '</{0}>'.format(self.tag)
-        return sep.join((start, content, end))
+        if "\n" in content:
+            start = "".join((start, "\n", indent + self.INDENTATION))
+            end = "".join(("\n", indent, end))
+        elif self.children:
+            if self.children[0].BREAK_BEFORE:
+                # The first child's BREAK_BEFORE has not been taken into
+                # account in _ElementContainer.compile(), so do it here
+                start = "".join((start, "\n", indent + self.INDENTATION))
+            if self.children[-1].BREAK_AFTER:
+                # The last child's BREAK_AFTER has not been taken into
+                # account in _ElementContainer.compile(), so do it here
+                end = "".join(("\n", indent, end))
+        return "".join((start, content, end))
+
+
+class _HTMLNewlineVoidElement(_HTMLVoidElement):
+    BREAK_BEFORE = True
+    BREAK_AFTER = True
+
+
+class _HTMLNewlineElement(_HTMLContainerElement):
+    BREAK_BEFORE = True
+    BREAK_AFTER = True
+
+
+class _HTMLStartlineVoidElement(_HTMLVoidElement):
+    BREAK_BEFORE = True
+    BREAK_AFTER = False
+
+
+class _HTMLStartlineElement(_HTMLContainerElement):
+    BREAK_BEFORE = True
+    BREAK_AFTER = False
+
+
+class _HTMLEndlineVoidElement(_HTMLVoidElement):
+    BREAK_BEFORE = False
+    BREAK_AFTER = True
+
+
+class _HTMLEndlineElement(_HTMLContainerElement):
+    BREAK_BEFORE = False
+    BREAK_AFTER = True
+
+
+class _HTMLSamelineVoidElement(_HTMLVoidElement):
+    BREAK_BEFORE = False
+    BREAK_AFTER = False
+
+
+class _HTMLSamelineElement(_HTMLContainerElement):
+    BREAK_BEFORE = False
+    BREAK_AFTER = False

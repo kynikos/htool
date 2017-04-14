@@ -22,18 +22,13 @@ from __future__ import (absolute_import, division,
                         print_function, unicode_literals)
 # from builtins import *
 
-from .dom import _Node
 from .tags import Base, Body, Head, Html, Link, Meta, Script, Style, Title
-from .misc import Doctype
+from .misc import Doctype, ElementContainer
 
 
-class Document(_Node):
-    def __init__(self, html, doctype=Doctype()):
-        self.doctype = doctype
-        self.html = html
-
-    def compile(self):
-        return '\n'.join((self.doctype.compile(), self.html.compile()))
+class Document(ElementContainer):
+    def __init__(self, html, doctype=None):
+        super().__init__(doctype or Doctype(), html)
 
 
 class SimpleDocument(Document):

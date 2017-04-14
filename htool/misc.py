@@ -22,18 +22,19 @@ from __future__ import (absolute_import, division,
                         print_function, unicode_literals)
 # from builtins import *
 
-from .dom import _Node, _Element, _ElementContainer
+from .dom import _Element, _ElementContainer
 from .text import _Text, TextRaw
 
 
-class Doctype(_Node):
-    # Not an HTML tag, but can be expected to be in this module
-    def compile(self):
+class Doctype(_Element):
+    BREAK_BEFORE = True
+    BREAK_AFTER = True
+
+    def compile(self, indent=""):
         return '<!doctype html>'
 
 
 class Comment(_Element):
-    # Not an HTML tag, but can be expected to be in this module
     # TODO: Does text have to be escaped in comments?
     # TODO: Document that the text isn't escaped in this case
     DEFAULT_ESCAPE_TEXT = TextRaw
@@ -46,7 +47,7 @@ class Comment(_Element):
                 textbit = self.DefaultContentEscape(textbit)
             self.text = ''.join((self.text, textbit.escaped))
 
-    def compile(self):
+    def compile(self, indent=""):
         # TODO: Optionally surround text with spaces?
         return self.text.join(('<!--', '-->'))
 
@@ -55,17 +56,19 @@ class ElementContainer(_ElementContainer):
     """
     Safe alias for the "private" _ElementContainer class.
     """
-    # Not an HTML tag, but can be expected to be in this module
     pass
 
 
 class _File(_Element):
+    BREAK_BEFORE = True
+    BREAK_AFTER = True
+
     def __init__(self, filename):
         super(_File, self).__init__()
         with open(filename, 'r') as f:
             self.text = self.DefaultContentEscape(f.read())
 
-    def compile(self):
+    def compile(self, indent=""):
         return self.text.escaped
 
 

@@ -24,11 +24,14 @@ from __future__ import (absolute_import, division,
 
 import itertools
 
-from .dom import _HTMLVoidElement, _HTMLNormalElement
+from .dom import (_HTMLNewlineVoidElement, _HTMLNewlineElement,
+                  _HTMLStartlineVoidElement, _HTMLStartlineElement,
+                  _HTMLEndlineVoidElement, _HTMLEndlineElement,
+                  _HTMLSamelineVoidElement, _HTMLSamelineElement)
 from .text import TextRaw
 
 
-class _List(_HTMLNormalElement):
+class _List(_HTMLNewlineElement):
     # This class is too coupled with this module to be moved to a separate one
     def append_item(self, item):
         if not isinstance(item, Li):
@@ -40,7 +43,7 @@ class _List(_HTMLNormalElement):
             self.append_item(item)
 
 
-class _Table(_HTMLNormalElement):
+class _Table(_HTMLNewlineElement):
     # This class is too coupled with this module to be moved to a separate one
     def append_header_row(self, *cells, **attributes):
         row = Tr(**attributes)
@@ -61,7 +64,7 @@ class _Table(_HTMLNormalElement):
             self.append_data_row(*row, **attributes)
 
 
-class A(_HTMLNormalElement):
+class A(_HTMLSamelineElement):
     TAG = 'a'
 
     @classmethod
@@ -69,83 +72,83 @@ class A(_HTMLNormalElement):
         return cls(url, href=url, **attributes)
 
 
-class Abbr(_HTMLNormalElement):
+class Abbr(_HTMLSamelineElement):
     TAG = 'abbr'
 
 
-class Address(_HTMLNormalElement):
+class Address(_HTMLNewlineElement):
     TAG = 'address'
 
 
-class Area(_HTMLVoidElement):
+class Area(_HTMLNewlineVoidElement):
     TAG = 'area'
 
 
-class Article(_HTMLNormalElement):
+class Article(_HTMLNewlineElement):
     TAG = 'article'
 
 
-class Aside(_HTMLNormalElement):
+class Aside(_HTMLNewlineElement):
     TAG = 'aside'
 
 
-class Audio(_HTMLNormalElement):
+class Audio(_HTMLNewlineElement):
     TAG = 'audio'
 
 
-class B(_HTMLNormalElement):
+class B(_HTMLSamelineElement):
     TAG = 'b'
 
 
-class Base(_HTMLVoidElement):
+class Base(_HTMLNewlineVoidElement):
     TAG = 'base'
 
 
-class Bdi(_HTMLNormalElement):
+class Bdi(_HTMLSamelineElement):
     TAG = 'bdi'
 
 
-class Bdo(_HTMLNormalElement):
+class Bdo(_HTMLSamelineElement):
     TAG = 'bdo'
 
 
-class Blockquote(_HTMLNormalElement):
+class Blockquote(_HTMLNewlineElement):
     TAG = 'blockquote'
 
 
-class Body(_HTMLNormalElement):
+class Body(_HTMLNewlineElement):
     TAG = 'body'
 
 
-class Br(_HTMLVoidElement):
+class Br(_HTMLEndlineVoidElement):
     TAG = 'br'
 
 
-class Button(_HTMLNormalElement):
+class Button(_HTMLSamelineElement):
     TAG = 'button'
 
 
-class Canvas(_HTMLNormalElement):
+class Canvas(_HTMLSamelineElement):
     TAG = 'canvas'
 
 
-class Caption(_HTMLNormalElement):
+class Caption(_HTMLNewlineElement):
     TAG = 'caption'
 
 
-class Cite(_HTMLNormalElement):
+class Cite(_HTMLSamelineElement):
     TAG = 'cite'
 
 
-class Code(_HTMLNormalElement):
+class Code(_HTMLSamelineElement):
     TAG = 'code'
 
 
-class Col(_HTMLVoidElement):
+class Col(_HTMLNewlineVoidElement):
     TAG = 'col'
 
 
-class Colgroup(_HTMLNormalElement):
+class Colgroup(_HTMLNewlineElement):
     TAG = 'colgroup'
 
     def populate(self, colN, classes=None):
@@ -162,155 +165,155 @@ class Colgroup(_HTMLNormalElement):
         return self
 
 
-class Data(_HTMLNormalElement):
+class Data(_HTMLSamelineElement):
     TAG = 'data'
 
 
-class Datalist(_HTMLNormalElement):
+class Datalist(_HTMLSamelineElement):
     TAG = 'datalist'
 
 
-class Dd(_HTMLNormalElement):
+class Dd(_HTMLSamelineElement):
     TAG = 'dd'
 
 
-class Del(_HTMLNormalElement):
+class Del(_HTMLSamelineElement):
     TAG = 'del'
 
 
-class Details(_HTMLNormalElement):
+class Details(_HTMLNewlineElement):
     TAG = 'details'
 
 
-class Dfn(_HTMLNormalElement):
+class Dfn(_HTMLSamelineElement):
     TAG = 'dfn'
 
 
-class Dialog(_HTMLNormalElement):
+class Dialog(_HTMLNewlineElement):
     TAG = 'dialog'
 
 
-class Div(_HTMLNormalElement):
+class Div(_HTMLNewlineElement):
     TAG = 'div'
 
 
-class Dl(_HTMLNormalElement):
+class Dl(_HTMLNewlineElement):
     TAG = 'dl'
 
 
-class Dt(_HTMLNormalElement):
+class Dt(_HTMLSamelineElement):
     TAG = 'dt'
 
 
-class Em(_HTMLNormalElement):
+class Em(_HTMLSamelineElement):
     TAG = 'em'
 
 
-class Embed(_HTMLVoidElement):
+class Embed(_HTMLNewlineVoidElement):
     TAG = 'embed'
 
 
-class Fieldset(_HTMLNormalElement):
+class Fieldset(_HTMLNewlineElement):
     TAG = 'fieldset'
 
 
-class Figcaption(_HTMLNormalElement):
+class Figcaption(_HTMLNewlineElement):
     TAG = 'figcaption'
 
 
-class Figure(_HTMLNormalElement):
+class Figure(_HTMLNewlineElement):
     TAG = 'figure'
 
 
-class Footer(_HTMLNormalElement):
+class Footer(_HTMLNewlineElement):
     TAG = 'footer'
 
 
-class Form(_HTMLNormalElement):
+class Form(_HTMLNewlineElement):
     TAG = 'form'
 
 
-class H1(_HTMLNormalElement):
+class H1(_HTMLNewlineElement):
     TAG = 'h1'
 
 
-class H2(_HTMLNormalElement):
+class H2(_HTMLNewlineElement):
     TAG = 'h2'
 
 
-class H3(_HTMLNormalElement):
+class H3(_HTMLNewlineElement):
     TAG = 'h3'
 
 
-class H4(_HTMLNormalElement):
+class H4(_HTMLNewlineElement):
     TAG = 'h4'
 
 
-class H5(_HTMLNormalElement):
+class H5(_HTMLNewlineElement):
     TAG = 'h5'
 
 
-class H6(_HTMLNormalElement):
+class H6(_HTMLNewlineElement):
     TAG = 'h6'
 
 
-class Head(_HTMLNormalElement):
+class Head(_HTMLNewlineElement):
     TAG = 'head'
 
 
-class Header(_HTMLNormalElement):
+class Header(_HTMLNewlineElement):
     TAG = 'header'
 
 
-class Hgroup(_HTMLNormalElement):
+class Hgroup(_HTMLNewlineElement):
     TAG = 'hgroup'
 
 
-class Hr(_HTMLVoidElement):
+class Hr(_HTMLNewlineVoidElement):
     TAG = 'hr'
 
 
-class Html(_HTMLNormalElement):
+class Html(_HTMLNewlineElement):
     TAG = 'html'
 
 
-class I(_HTMLNormalElement):
+class I(_HTMLSamelineElement):
     TAG = 'i'
 
 
-class Iframe(_HTMLNormalElement):
+class Iframe(_HTMLNewlineElement):
     TAG = 'iframe'
 
 
-class Img(_HTMLVoidElement):
+class Img(_HTMLSamelineVoidElement):
     TAG = 'img'
 
 
-class Input(_HTMLVoidElement):
+class Input(_HTMLSamelineVoidElement):
     TAG = 'input'
 
 
-class Ins(_HTMLNormalElement):
+class Ins(_HTMLSamelineElement):
     TAG = 'ins'
 
 
-class Kbd(_HTMLNormalElement):
+class Kbd(_HTMLSamelineElement):
     TAG = 'kbd'
 
 
-class Label(_HTMLNormalElement):
+class Label(_HTMLSamelineElement):
     TAG = 'label'
 
 
-class Legend(_HTMLNormalElement):
+class Legend(_HTMLNewlineElement):
     TAG = 'legend'
 
 
-class Li(_HTMLNormalElement):
+class Li(_HTMLNewlineElement):
     TAG = 'li'
 
 
-class Link(_HTMLVoidElement):
+class Link(_HTMLNewlineVoidElement):
     TAG = 'link'
 
     @classmethod
@@ -322,43 +325,43 @@ class Link(_HTMLVoidElement):
         return cls(href=path, rel="shortcut icon", **attributes)
 
 
-class Main(_HTMLNormalElement):
+class Main(_HTMLNewlineElement):
     TAG = 'main'
 
 
-class Map(_HTMLNormalElement):
+class Map(_HTMLNewlineElement):
     TAG = 'map'
 
 
-class Mark(_HTMLNormalElement):
+class Mark(_HTMLSamelineElement):
     TAG = 'mark'
 
 
-class Menu(_HTMLNormalElement):
+class Menu(_HTMLNewlineElement):
     TAG = 'menu'
 
 
-class Menuitem(_HTMLNormalElement):
+class Menuitem(_HTMLNewlineElement):
     TAG = 'menuitem'
 
 
-class Meta(_HTMLVoidElement):
+class Meta(_HTMLNewlineVoidElement):
     TAG = 'meta'
 
 
-class Meter(_HTMLNormalElement):
+class Meter(_HTMLSamelineElement):
     TAG = 'meter'
 
 
-class Nav(_HTMLNormalElement):
+class Nav(_HTMLNewlineElement):
     TAG = 'nav'
 
 
-class Noscript(_HTMLNormalElement):
+class Noscript(_HTMLNewlineElement):
     TAG = 'noscript'
 
 
-class Object(_HTMLNormalElement):
+class Object(_HTMLNewlineElement):
     TAG = 'object'
 
 
@@ -366,67 +369,67 @@ class Ol(_List):
     TAG = 'ol'
 
 
-class Optgroup(_HTMLNormalElement):
+class Optgroup(_HTMLNewlineElement):
     TAG = 'optgroup'
 
 
-class Option(_HTMLNormalElement):
+class Option(_HTMLNewlineElement):
     TAG = 'option'
 
 
-class Output(_HTMLNormalElement):
+class Output(_HTMLSamelineElement):
     TAG = 'output'
 
 
-class P(_HTMLNormalElement):
+class P(_HTMLNewlineElement):
     TAG = 'p'
 
 
-class Param(_HTMLVoidElement):
+class Param(_HTMLNewlineVoidElement):
     TAG = 'param'
 
 
-class Picture(_HTMLNormalElement):
+class Picture(_HTMLNewlineElement):
     TAG = 'picture'
 
 
-class Pre(_HTMLNormalElement):
+class Pre(_HTMLNewlineElement):
     TAG = 'pre'
 
 
-class Progress(_HTMLNormalElement):
+class Progress(_HTMLSamelineElement):
     TAG = 'progress'
 
 
-class Q(_HTMLNormalElement):
+class Q(_HTMLSamelineElement):
     TAG = 'q'
 
 
-class Rp(_HTMLNormalElement):
+class Rp(_HTMLSamelineElement):
     TAG = 'rp'
 
 
-class Rt(_HTMLNormalElement):
+class Rt(_HTMLSamelineElement):
     TAG = 'rt'
 
 
-class Rtc(_HTMLNormalElement):
+class Rtc(_HTMLSamelineElement):
     TAG = 'rtc'
 
 
-class Ruby(_HTMLNormalElement):
+class Ruby(_HTMLNewlineElement):
     TAG = 'ruby'
 
 
-class S(_HTMLNormalElement):
+class S(_HTMLSamelineElement):
     TAG = 's'
 
 
-class Samp(_HTMLNormalElement):
+class Samp(_HTMLSamelineElement):
     TAG = 'samp'
 
 
-class Script(_HTMLNormalElement):
+class Script(_HTMLNewlineElement):
     TAG = 'script'
     # TODO: Document that the text isn't escaped in this case
     DEFAULT_ESCAPE_TEXT = TextRaw
@@ -436,47 +439,43 @@ class Script(_HTMLNormalElement):
         return cls(*children, type='text/javascript', **attributes)
 
 
-class Section(_HTMLNormalElement):
+class Section(_HTMLNewlineElement):
     TAG = 'section'
 
 
-class Select(_HTMLNormalElement):
+class Select(_HTMLSamelineElement):
     TAG = 'select'
 
 
-class Shadow(_HTMLNormalElement):
-    TAG = 'select'
-
-
-class Small(_HTMLNormalElement):
+class Small(_HTMLSamelineElement):
     TAG = 'small'
 
 
-class Source(_HTMLVoidElement):
+class Source(_HTMLNewlineVoidElement):
     TAG = 'source'
 
 
-class Span(_HTMLNormalElement):
+class Span(_HTMLSamelineElement):
     TAG = 'span'
 
 
-class Strong(_HTMLNormalElement):
+class Strong(_HTMLSamelineElement):
     TAG = 'strong'
 
 
-class Style(_HTMLNormalElement):
+class Style(_HTMLNewlineElement):
     TAG = 'style'
 
 
-class Sub(_HTMLNormalElement):
+class Sub(_HTMLSamelineElement):
     TAG = 'sub'
 
 
-class Summary(_HTMLNormalElement):
+class Summary(_HTMLNewlineElement):
     TAG = 'summary'
 
 
-class Sup(_HTMLNormalElement):
+class Sup(_HTMLSamelineElement):
     TAG = 'sup'
 
 
@@ -488,15 +487,15 @@ class Tbody(_Table):
     TAG = 'tbody'
 
 
-class Td(_HTMLNormalElement):
+class Td(_HTMLNewlineElement):
     TAG = 'td'
 
 
-class Template(_HTMLNormalElement):
+class Template(_HTMLNewlineElement):
     TAG = 'template'
 
 
-class Textarea(_HTMLNormalElement):
+class Textarea(_HTMLNewlineElement):
     TAG = 'textarea'
 
 
@@ -504,7 +503,7 @@ class Tfoot(_Table):
     TAG = 'tfoot'
 
 
-class Th(_HTMLNormalElement):
+class Th(_HTMLNewlineElement):
     TAG = 'th'
 
 
@@ -512,15 +511,15 @@ class Thead(_Table):
     TAG = 'thead'
 
 
-class Time(_HTMLNormalElement):
+class Time(_HTMLSamelineElement):
     TAG = 'time'
 
 
-class Title(_HTMLNormalElement):
+class Title(_HTMLNewlineElement):
     TAG = 'title'
 
 
-class Tr(_HTMLNormalElement):
+class Tr(_HTMLNewlineElement):
     TAG = 'tr'
 
     def append_header_cell(self, cell):
@@ -542,11 +541,11 @@ class Tr(_HTMLNormalElement):
             self.append_data_cell(cell)
 
 
-class Track(_HTMLVoidElement):
+class Track(_HTMLNewlineVoidElement):
     TAG = 'track'
 
 
-class U(_HTMLNormalElement):
+class U(_HTMLSamelineElement):
     TAG = 'u'
 
 
@@ -554,13 +553,13 @@ class Ul(_List):
     TAG = 'ul'
 
 
-class Var(_HTMLNormalElement):
+class Var(_HTMLSamelineElement):
     TAG = 'var'
 
 
-class Video(_HTMLNormalElement):
+class Video(_HTMLNewlineElement):
     TAG = 'video'
 
 
-class Wbr(_HTMLNormalElement):
+class Wbr(_HTMLSamelineElement):
     TAG = 'wbr'
