@@ -25,6 +25,7 @@ from __future__ import (absolute_import, division,
 import itertools
 
 from .dom import (_HTMLNewlineVoidElement, _HTMLNewlineElement,
+                  _HTMLPrelineVoidElement, _HTMLPrelineElement,
                   _HTMLStartlineVoidElement, _HTMLStartlineElement,
                   _HTMLEndlineVoidElement, _HTMLEndlineElement,
                   _HTMLSamelineVoidElement, _HTMLSamelineElement)
@@ -393,7 +394,7 @@ class Picture(_HTMLNewlineElement):
     TAG = 'picture'
 
 
-class Pre(_HTMLNewlineElement):
+class Pre(_HTMLPrelineElement):
     TAG = 'pre'
 
 
@@ -495,7 +496,7 @@ class Template(_HTMLNewlineElement):
     TAG = 'template'
 
 
-class Textarea(_HTMLNewlineElement):
+class Textarea(_HTMLPrelineElement):
     TAG = 'textarea'
 
 

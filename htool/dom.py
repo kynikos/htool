@@ -254,14 +254,10 @@ class _ElementContainer(_Element):
         subindent = "".join((indent, self.INDENTATION))
         # The first child's BREAK_BEFORE is taken into account in
         # _HTMLContainerElement.compile()
-        # It's important to not indent multiline text, because it would break
-        # elements like <pre> or <textarea>
         compiled = prevchild.compile(indent=subindent)
         for child in self.children[1:]:
             if prevchild.BREAK_AFTER or child.BREAK_BEFORE:
                 compiled = "".join((compiled, "\n", subindent))
-            # It's important to not indent multiline text, because it would
-            # break elements like <pre> or <textarea>
             compiled = "".join((compiled, child.compile(indent=subindent)))
             prevchild = child
         # The last child's BREAK_AFTER is taken into account in
@@ -271,6 +267,12 @@ class _ElementContainer(_Element):
 
 class _HTMLContainerElement(_HTMLElement, _ElementContainer):
     INDENTATION = ' ' * 2
+    # NOTE[1]: By default do not force indentation on multiline text, because
+    # some elements like <pre> or <textarea> preserve white space (also leading
+    # and trailing); CSS behavior is influenced too in many inline elements
+    # See also
+    # https://stackoverflow.com/questions/27025877/are-leading-and-trailing-whitespaces-ignored-in-html
+    AUTOINDENT_MULTILINE = False
 
     def __init__(self, *children, **attributes):
         _HTMLElement.__init__(self, **attributes)
@@ -282,7 +284,11 @@ class _HTMLContainerElement(_HTMLElement, _ElementContainer):
         # The content is indented by _ElementContainer.compile()
         content = _ElementContainer.compile(self, indent=indent)
         end = self.tag.join(('</', '>'))
-        if "\n" in content:
+        # See NOTE[1]
+        # Do not just test if there are children with a BREAK_* attribute,
+        # since also all the descendants should be tested and the code would
+        # get much more complicated
+        if self.AUTOINDENT_MULTILINE and "\n" in content:
             start = "".join((start, "\n", indent, self.INDENTATION))
             end = "".join(("\n", indent, end))
         else:
@@ -305,38 +311,58 @@ class _HTMLContainerElement(_HTMLElement, _ElementContainer):
 class _HTMLNewlineVoidElement(_HTMLVoidElement):
     BREAK_BEFORE = True
     BREAK_AFTER = True
+    AUTOINDENT_MULTILINE = True
 
 
 class _HTMLNewlineElement(_HTMLContainerElement):
     BREAK_BEFORE = True
     BREAK_AFTER = True
+    AUTOINDENT_MULTILINE = True
+
+
+class _HTMLPrelineVoidElement(_HTMLVoidElement):
+    BREAK_BEFORE = True
+    BREAK_AFTER = True
+    AUTOINDENT_MULTILINE = False
+
+
+class _HTMLPrelineElement(_HTMLContainerElement):
+    BREAK_BEFORE = True
+    BREAK_AFTER = True
+    AUTOINDENT_MULTILINE = False
 
 
 class _HTMLStartlineVoidElement(_HTMLVoidElement):
     BREAK_BEFORE = True
     BREAK_AFTER = False
+    AUTOINDENT_MULTILINE = False
 
 
 class _HTMLStartlineElement(_HTMLContainerElement):
     BREAK_BEFORE = True
     BREAK_AFTER = False
+    AUTOINDENT_MULTILINE = False
 
 
 class _HTMLEndlineVoidElement(_HTMLVoidElement):
     BREAK_BEFORE = False
     BREAK_AFTER = True
+    AUTOINDENT_MULTILINE = False
 
 
 class _HTMLEndlineElement(_HTMLContainerElement):
     BREAK_BEFORE = False
     BREAK_AFTER = True
+    AUTOINDENT_MULTILINE = False
 
 
 class _HTMLSamelineVoidElement(_HTMLVoidElement):
     BREAK_BEFORE = False
     BREAK_AFTER = False
+    AUTOINDENT_MULTILINE = False
 
 
 class _HTMLSamelineElement(_HTMLContainerElement):
     BREAK_BEFORE = False
     BREAK_AFTER = False
+    AUTOINDENT_MULTILINE = False
