@@ -199,7 +199,7 @@ class _HTMLElement(_Element):
                 if value is None:
                     attribute = escname
                 else:
-                    escvalue = '"{0}"'.format(value.escaped)
+                    escvalue = value.escaped.join(('"', '"'))
                     attribute = '='.join((escname, escvalue))
                 attributes = ' '.join((attributes, attribute))
             return ''.join((self.tag, attributes))
@@ -209,7 +209,7 @@ class _HTMLElement(_Element):
 
 class _HTMLVoidElement(_HTMLElement):
     def compile(self, indent=""):
-        return '<{0} />'.format(self._compose_start_tag())
+        return self._compose_start_tag().join(('<', ' />'))
 
 
 class _ElementContainer(_Element):
@@ -251,7 +251,7 @@ class _ElementContainer(_Element):
         except IndexError:
             return ""
 
-        subindent = indent + self.INDENTATION
+        subindent = "".join((indent, self.INDENTATION))
         # The first child's BREAK_BEFORE is taken into account in
         # _HTMLContainerElement.compile()
         # It's important to not indent multiline text, because it would break
@@ -278,22 +278,27 @@ class _HTMLContainerElement(_HTMLElement, _ElementContainer):
 
     def compile(self, indent=""):
         # The start tag is indented by the partent _ElementContainer if needed
-        start = '<{0}>'.format(self._compose_start_tag())
+        start = self._compose_start_tag().join(('<', '>'))
         # The content is indented by _ElementContainer.compile()
         content = _ElementContainer.compile(self, indent=indent)
-        end = '</{0}>'.format(self.tag)
+        end = self.tag.join(('</', '>'))
         if "\n" in content:
-            start = "".join((start, "\n", indent + self.INDENTATION))
+            start = "".join((start, "\n", indent, self.INDENTATION))
             end = "".join(("\n", indent, end))
-        elif self.children:
-            if self.children[0].BREAK_BEFORE:
-                # The first child's BREAK_BEFORE has not been taken into
-                # account in _ElementContainer.compile(), so do it here
-                start = "".join((start, "\n", indent + self.INDENTATION))
-            if self.children[-1].BREAK_AFTER:
-                # The last child's BREAK_AFTER has not been taken into
-                # account in _ElementContainer.compile(), so do it here
-                end = "".join(("\n", indent, end))
+        else:
+            try:
+                first_child = self.children[0]
+            except IndexError:
+                pass
+            else:
+                if first_child.BREAK_BEFORE:
+                    # The first child's BREAK_BEFORE has not been taken into
+                    # account in _ElementContainer.compile(), so do it here
+                    start = "".join((start, "\n", indent, self.INDENTATION))
+                if self.children[-1].BREAK_AFTER:
+                    # The last child's BREAK_AFTER has not been taken into
+                    # account in _ElementContainer.compile(), so do it here
+                    end = "".join(("\n", indent, end))
         return "".join((start, content, end))
 
 
