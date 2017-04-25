@@ -28,7 +28,7 @@ from .misc import Doctype, ElementContainer
 
 class Document(ElementContainer):
     def __init__(self, html, doctype=None):
-        super().__init__(doctype or Doctype(), html)
+        super(Document, self).__init__(doctype or Doctype(), html)
 
 
 class SimpleDocument(Document):
