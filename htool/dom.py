@@ -133,8 +133,7 @@ class _HTMLElement(_Element):
         attributes.pop('class_', None)
         classnames.extend(attributes.get('classes', []))
         attributes.pop('classes', None)
-        for cname in classnames:
-            self.add_class(cname)
+        self.add_classes(*classnames)
 
         self.set_attributes(**attributes)
 
@@ -181,9 +180,12 @@ class _HTMLElement(_Element):
             self.set_attribute(name, value)
 
     def add_class(self, cname):
+        return self.add_classes(*cname.split())
+
+    def add_classes(self, *cnames):
         # Prevent duplication; duplicate classes can be forced with
         # set_attribute
-        # Do not use a set, or the class order will be lost (not meaningful,
+        # Do *not* use a set, or the class order will be lost (not meaningful,
         # but would create different html output every time)
         try:
             class_ = self.get_attribute('class')
@@ -191,11 +193,12 @@ class _HTMLElement(_Element):
             classes = []
         else:
             classes = class_.split()
-        if not isinstance(cname, _Text):
-            cname = self.DefaultAttributeValueEscape(cname)
-        if cname.escaped not in classes:
-            classes.append(cname.escaped)
-            self.set_attribute('class', ' '.join(classes))
+        for cname in cnames:
+            if not isinstance(cname, _Text):
+                cname = self.DefaultAttributeValueEscape(cname)
+            if cname.escaped not in classes:
+                classes.append(cname.escaped)
+        self.set_attribute('class', ' '.join(classes))
 
     def _compose_start_tag(self):
         if self.attributes:
