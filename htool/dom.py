@@ -149,9 +149,14 @@ class _HTMLElement(_Element):
         from .misc import ElementContainer
         container = ElementContainer()
         if elements:
-            for element in elements[:-1]:
-                container.append_children(element, cls(**attributes))
-            container.append_child(elements[-1])
+            ielements = iter(elements)
+            for element in ielements:
+                if element is not None:
+                    container.append_children(element)
+                    break
+            for element in ielements:
+                if element is not None:
+                    container.append_children(cls(**attributes), element)
             return container
 
     def get_attribute(self, name):
