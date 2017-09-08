@@ -117,22 +117,35 @@ class _HTMLElement(_Element):
         for name, value in self.ATTRIBUTES.items():
             self.set_attribute(name, value)
 
-        # 'class' is a reserved Python keyword, so support using 'class_' and
-        # 'classes'
-        # TODO: Document this, including the fact that it's not possible to
-        #       assign literal 'class_' or 'classes' attributes from keyword,
-        #       as they will always be converted; suggest to use set_attribute
-        #       in that case, and for other attributes such as 'data-*', or
-        #       Tag(**{'class': 'name'})
+        # TODO: Make sure to properly document the following behavior
         #       Also document that duplicate classes are automatically removed,
-        #       and, again, using set_attribute is the way to force them
-        # Note that a 'class' parameter can still be passed directly with e.g.
-        # Tag(**{'class': 'name'}), so make sure to no override it here
-        classnames = attributes.get('class', '').split()
-        classnames.extend(attributes.get('class_', '').split())
-        attributes.pop('class_', None)
-        classnames.extend(attributes.get('classes', []))
-        attributes.pop('classes', None)
+        #       and using set_attribute() is the way to force them
+        # If in need of overriding this behavior, use set_attribute() or
+        # Tag(**{'-attr-foo_bar-': 'value'})
+        # 'classes' is a special attribute (this can be overridden by passing
+        # classes_="value", **{"_classes": "value"}, etc.)
+        classnames = attributes.pop('classes', [])
+        for attrname, attrval in attributes.items():
+            # If an attribute ends with an underscore, the underscore is
+            # removed and the rest of the attribute name is used as is; this is
+            # useful for example with 'class' and 'for', which are common HTML
+            # attributes but also reserved Python keywords; if an attribute is
+            # passed both with and without a trailing underscore, the two are
+            # left as they are
+            # If in need to keep the final underscore, just double it, e.g.
+            # attr__="value"
+            if attrname.endswith("_"):
+                attrname_ = attrname[:-1]
+                if attrname_ not in attributes:
+                    attributes[attrname_] = attributes.pop(attrname)
+            # Else all underscores are changed into dashes; this is useful for
+            # example with the 'data-*' attributes; if however the "dashed"
+            # attribute name already exists, leave the two as they are
+            else:
+                attrname_ = attrname.replace("_", "-")
+                if attrname_ not in attributes:
+                    attributes[attrname_] = attributes.pop(attrname)
+        classnames.extend(attributes.get('class', '').split())
         self.add_classes(*classnames)
 
         self.set_attributes(**attributes)
