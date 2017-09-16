@@ -124,6 +124,7 @@ class _HTMLElement(_Element):
         # Tag(**{'-attr-foo_bar-': 'value'})
         # 'classes' is a special attribute (this can be overridden by passing
         # classes_="value", **{"_classes": "value"}, etc.)
+        # Note that 'classes' can't be a tuple, it must be a list!
         classnames = attributes.pop('classes', [])
         for attrname, attrval in attributes.items():
             # If an attribute ends with an underscore, the underscore is
@@ -211,7 +212,8 @@ class _HTMLElement(_Element):
                 cname = self.DefaultAttributeValueEscape(cname)
             if cname.escaped not in classes:
                 classes.append(cname.escaped)
-        self.set_attribute('class', ' '.join(classes))
+        if classes:
+            self.set_attribute('class', ' '.join(classes))
 
     def _compose_start_tag(self):
         if self.attributes:
