@@ -123,7 +123,7 @@ class _HTMLElement(_Element):
         # If in need of overriding this behavior, use set_attribute() or
         # Tag(**{'-attr-foo_bar-': 'value'})
         # 'classes' is a special attribute (this can be overridden by passing
-        # classes_="value", **{"_classes": "value"}, etc.)
+        # classes_="value", Classes="value", **{"classes_": "value"}, etc.)
         # Note that 'classes' can't be a tuple, it must be a list!
         classnames = attributes.pop('classes', [])
         for attrname, attrval in attributes.items():
@@ -139,11 +139,13 @@ class _HTMLElement(_Element):
                 attrname_ = attrname[:-1]
                 if attrname_ not in attributes:
                     attributes[attrname_] = attributes.pop(attrname)
-            # Else all underscores are changed into dashes; this is useful for
-            # example with the 'data-*' attributes; if however the "dashed"
-            # attribute name already exists, leave the two as they are
+            # Else all underscores are changed into dashes, and the attribute
+            # name is converted to lowercase; this is useful for example with
+            # 'class' and 'for' (use Class="value", For="value"...) and the
+            # 'data-*' attributes; if however the "dashed" attribute name
+            # already exists, leave the two as they are
             else:
-                attrname_ = attrname.replace("_", "-")
+                attrname_ = attrname.replace("_", "-").lower()
                 if attrname_ not in attributes:
                     attributes[attrname_] = attributes.pop(attrname)
         classnames.extend(attributes.get('class', '').split())
@@ -179,6 +181,10 @@ class _HTMLElement(_Element):
         return value
 
     def set_attribute(self, name, value):
+        # TODO: HTML attributes are case-insensitive, force lowercase here?
+        #       Note that currently lower() is applied to attributes in the
+        #       constructor: if added here, it must be removed from the
+        #       constructor, since it would be redundant
         if not isinstance(name, _Text):
             name = self.DefaultAttributeNameEscape(name)
         # A value of None should create attributes without values
