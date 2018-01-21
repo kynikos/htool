@@ -20,6 +20,7 @@
 # http://python-future.org/
 from __future__ import (absolute_import, division,
                         print_function, unicode_literals)
+# Support Python 2.6
 # from builtins import *
 
 from .tags import Base, Body, Head, Html, Link, Meta, Script, Style, Title
