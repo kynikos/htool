@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='htool',
-    version='1.0.0',
+    version='1.0.1',
     description=('Create and manipulate HTML as objects.'),
     long_description=('HyperText Object-Oriented Layer: create and manipulate '
                       'HTML documents using Python objects.'),
