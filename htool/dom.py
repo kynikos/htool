@@ -127,7 +127,7 @@ class _HTMLElement(_Element):
         # classes_="value", Classes="value", **{"classes_": "value"}, etc.)
         # Note that 'classes' can't be a tuple, it must be a list!
         classnames = attributes.pop('classes', [])
-        for attrname, attrval in attributes.items():
+        for attrname, attrval in tuple(attributes.items()):
             # If an attribute ends with an underscore, the underscore is
             # removed and the rest of the attribute name is used as is; this is
             # useful for example with 'class' and 'for', which are common HTML
